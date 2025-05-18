@@ -1,0 +1,134 @@
+User Flow for MatchPoint Group Management App
+1. Registration & Profile Setup
+1.	Basic Registration
+o	New user creates an account (email, password)
+o	Completes basic profile with username and photo (optional)
+o	Selects preferred sports
+o	Sets general availability preferences (morning/evening/weekend)
+2.	Privacy Settings
+o	User configures privacy preferences and information sharing
+o	Selects general area (city/neighborhood) without exact location
+o	Sets notification permissions
+3.	Getting Started Guide
+o	Brief explanation of how to create or join a group
+o	Highlighting the group and game management functionality
+2. Creating and Managing Groups
+1.	Creating a New Group
+o	Clicks "Create New Group"
+o	Sets group name, sport type, and brief description
+o	Chooses privacy setting: 
+	Private group: Visible only to invitees
+	Public group: Visible in search, users can request to join
+o	Creates an invitation code or link for the group
+2.	Inviting Friends to Group
+o	Invites friends via invitation code/link
+o	Option to send invitations through external messaging apps
+o	For public groups: Managing join requests
+o	Assigning roles (admin, organizer, player)
+3.	Managing Group Members
+o	Viewing group member list
+o	Assigning permissions to selected members
+o	Removing members if necessary
+o	For public groups: Approving/rejecting join requests
+4.	Updating Group Settings
+o	Changing group details (name, description)
+o	Updating privacy settings (switching between private and public)
+o	Setting group rules (skill level, game frequency, etc.)
+3. Organizing One-Time Games
+1.	Creating a Game
+o	From the group page, selects "Schedule New Game"
+o	Sets date, time, and general location
+o	Defines number of available spots (e.g., 15 players)
+o	Adds important game details (required equipment, meeting points)
+o	Chooses game privacy setting: 
+	Internal game: Only for group members
+	Open game: Group members + option to invite guests
+2.	Publishing and Inviting Players
+o	Game is published to group members
+o	Notifications are sent to group members
+o	Game appears in the group's event calendar
+o	If game is open: Group members can invite guests
+3.	Managing Registrations
+o	Participant list updates in real-time
+o	Automatic waitlist management
+o	Option for early registration closing
+o	Automatic reminders to registered participants
+4. Organizing Recurring Games
+1.	Setting Up a Recurring Game
+o	When creating a game, enables "Set as Recurring"
+o	Chooses frequency (weekly, bi-weekly)
+o	Sets fixed day and time (e.g., every Monday at 7:00 PM)
+o	Defines a regular location for games
+o	Defines whether each session will be internal or open
+2.	Advanced Settings for Recurring Games
+o	Configures registration rules: 
+	Whether to allow automatic registration for regular players
+	When registration window opens and closes
+	How the waitlist is managed
+o	Option to define a "season" with start and end dates
+3.	Managing Exceptions
+o	Option to cancel a specific session
+o	Changing details for individual sessions
+o	Adding special notes for certain sessions
+5. Participant Experience in Games
+1.	Registering for a Group Game
+o	Viewing available games in their groups
+o	Clicking "Register" for an interesting game
+o	Confirming availability and receiving participation confirmation
+o	Option to cancel participation before the closing deadline
+2.	Options for Recurring Games
+o	Registering for a single session or the entire series
+o	Marking known absences in advance
+o	Receiving updates about schedule changes
+3.	Group Communication for Games
+o	Dedicated game chat for coordination
+o	Receiving updates from game organizer
+o	Viewing updated participant list
+4.	Inviting Guests (for Open Games)
+o	Sharing invitation link with external friends
+o	Tracking who was invited and accepted
+o	Limitations on guest numbers according to game settings
+6. Game Day Management
+1.	Before the Game
+o	Automatic reminders sent to participants
+o	Players confirm final attendance
+o	Real-time updates about changes/cancellations
+2.	Team Division
+o	Game organizer can divide into balanced teams
+o	Options for automatic or manual assignment
+o	Players receive notification of their team assignment
+3.	During the Game
+o	Simple interface for score management (optional)
+o	Option to share photos in the group
+o	Easy documentation of important events
+4.	After the Game
+	Recording results and attendance
+	Automatic preparation for next game (in recurring series)
+	Updating basic group statistics
+7. Long-Term Group Management
+1.	Group Homepage
+	Event calendar with planned games
+	Basic statistics (number of games, participation)
+	Important group announcements
+2.	Administrative Management
+	Managing members and permissions
+	Group settings and privacy
+	Managing preferred game locations
+3.	Archives
+	Access to past games and their results
+	Game photos (if shared)
+	Participation statistics over time
+8. Discovering Groups and Games
+1.	Searching for Public Groups
+	Option to search for public groups by sport type and general area
+	Only groups defined as "public" will appear in search
+	Displaying basic information: sport type, number of members, game frequency
+2.	Joining a Public Group
+	Sending join request to an interesting group
+	Waiting for approval from group admin
+	Option to add a personal message to the request
+3.	Searching for Open Games (Optional)
+	If enabled by system admins: Option to search for open games in the area
+	Displaying only games defined as "open to guests" by organizers
+	Registration conditional on approval from group/game admin
+

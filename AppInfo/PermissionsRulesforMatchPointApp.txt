@@ -1,0 +1,63 @@
+Permissions Rules for Sports Team Organizer App
+Core Permission System
+The app uses a role-based permissions model where access is determined by group membership and assigned roles:
+•	Group membership determines basic access to groups, games, and related content
+•	Roles within groups (admin, organizer, member) define specific action permissions
+•	Composite key structure (groupId_userId) enables efficient permission verification
+Role Hierarchy
+1.	Admin 
+	Full control over group settings and membership
+	Can create and manage games/events
+	Can assign other members as organizers
+2.	Organizer 
+	Can create and manage games/events
+	Can handle registrations and team assignments
+	Cannot modify group settings or membership
+3.	Member 
+	Can view group content and join games
+	Can participate in chats and discussions
+	Cannot create games or modify group structure
+Performance Optimization Strategies
+Data Denormalization
+•	Store role information in multiple places to reduce permission checks
+•	Include basic group info directly in game documents
+•	Maintain counters (member count, etc.) at document level
+•	Duplicate critical fields to minimize cross-collection reads
+Client-Side Caching
+•	Cache user roles and permissions in React context
+•	Implement React Query or SWR for data fetching with caching
+•	Store membership information in localStorage for initial rendering
+•	Use optimistic UI updates with proper validation
+Security Rule Implementation
+Key Security Rule Patterns
+javascript
+// Check if user is group member
+function isGroupMember(groupId) {
+  return request.auth != null && 
+    exists(/databases/$(database)/documents/groupMembers/$(groupId)_$(request.auth.uid));
+}
+
+// Check if user is group admin
+function isGroupAdmin(groupId) {
+  return isGroupMember(groupId) &&
+    get(/databases/$(database)/documents/groupMembers/$(groupId)_$(request.auth.uid)).data.role == 'admin';
+}
+Comprehensive Testing Strategy
+•	Use Firebase Emulator Suite for local testing of security rules
+•	Create test scripts that verify all permission scenarios
+•	Test each rule with allowed and disallowed users
+•	Validate complex queries and edge cases
+•	Simulate different user roles and actions
+Firebase Emulator Integration
+•	Set up Firebase Emulator in development environment
+•	Create test data seeds for different permission scenarios
+•	Test security rules in isolation from app logic
+•	Verify rule performance and optimize where needed
+•	Run automated tests against emulator before deployment
+Client-Side Access Control
+•	UI elements conditionally rendered based on user role
+•	Navigation options limited by permission level
+•	Form submit actions validated against permissions before execution
+•	Realtime updates filtered by permission scope
+This permission system provides multi-group functionality with strong security boundaries while maintaining Firebase compatibility, avoiding the need for true multi-tenancy architecture.
+

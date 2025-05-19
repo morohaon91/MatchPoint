@@ -1,0 +1,219 @@
+Complete Pages List 
+Here's a comprehensive list of all pages you'll need to create and use in your sports group management app, organized by module and functionality.
+Authentication Pages
+1.	Sign In Page (pages/signin.tsx) 
+	Already exists in Fire-SaaS
+	Form for email/password login
+	Social login options (optional)
+	"Forgot password" link
+2.	Sign Up Page (pages/signup.tsx) 
+	Already exists in Fire-SaaS
+	Registration form
+	Terms acceptance
+	Initial profile information
+3.	Forgot Password Page (pages/forgot-password.tsx) 
+	Already exists in Fire-SaaS
+	Email input for password reset
+4.	Profile Setup Page (pages/profile/setup.tsx) 
+	Create new
+	Collect sports preferences
+	Availability settings
+	General location
+Core Navigation Pages
+5.	Landing Page (pages/index.tsx) 
+	Modify existing
+	App introduction for non-logged in users
+	Benefits, features, testimonials
+	Clear call-to-action
+6.	Dashboard Page (pages/dashboard.tsx) 
+	Modify existing
+	Overview of user's groups
+	Upcoming games
+	Recent activity
+	Quick action buttons
+7.	Profile Page (pages/profile/index.tsx) 
+	Create new or modify existing
+	User information
+	Sports preferences
+	Notification settings
+	Account management
+Group Management Pages
+8.	Groups List Page (pages/groups/index.tsx) 
+	Create new
+	List of user's groups
+	Create group button
+	Group cards with basic info
+	Filter/sorting options
+9.	Group Creation Page (pages/groups/create.tsx) 
+	Create new
+	Form for new group details
+	Privacy settings
+	Initial member invitations
+10.	Group Details Page (pages/groups/[groupId]/index.tsx) 
+	Create new
+	Group header with photo/info
+	Tabs for different sections (games, members, etc.)
+	Group announcements
+	Quick actions
+11.	Group Edit Page (pages/groups/[groupId]/edit.tsx) 
+	Create new
+	Form to update group details
+	Privacy settings
+	Delete group option
+12.	Group Members Page (pages/groups/[groupId]/members.tsx) 
+	Create new
+	List of all members with roles
+	Member management controls
+	Add/remove members
+	Role assignment
+13.	Group Invitation Page (pages/groups/invite/[inviteCode].tsx) 
+	Create new
+	Landing page for group invitations
+	Group preview
+	Accept/decline options
+14.	Join Requests Page (pages/groups/[groupId]/requests.tsx) 
+	Create new
+	List of pending join requests
+	Approve/reject controls
+	Request details
+Game Management Pages
+15.	Group Games List Page (pages/groups/[groupId]/games/index.tsx) 
+	Create new
+	List of upcoming and past games
+	Calendar view option
+	Create game button
+	Filter by status, date, etc.
+16.	Game Creation Page (pages/groups/[groupId]/games/create.tsx) 
+	Create new
+	Form for new game details
+	Date/time picker
+	Location selection
+	Participant limit
+	Recurring settings option
+17.	Game Details Page (pages/groups/[groupId]/games/[gameId].tsx) 
+	Create new
+	Game information header
+	Participant list with status
+	Team assignments (if made)
+	Game chat/discussions
+	Registration controls
+18.	Game Edit Page (pages/groups/[groupId]/games/[gameId]/edit.tsx) 
+	Create new
+	Form to update game details
+	Manage exceptions (for recurring)
+	Cancel game option
+19.	Team Formation Page (pages/groups/[groupId]/games/[gameId]/teams.tsx) 
+	Create new
+	List of confirmed participants
+	Manual or automatic team formation
+	Team balancing controls
+	Save/share team assignments
+20.	Game Results Page (pages/groups/[groupId]/games/[gameId]/results.tsx) 
+	Create new
+	Score/result entry form
+	Attendance marking
+	Photo upload
+	Notes/highlights field
+21.	Recurring Series Management Page (pages/groups/[groupId]/series/[seriesId].tsx) 
+	Create new
+	Overview of all instances in series
+	Manage exceptions
+	Edit recurring settings
+	Cancel series option
+Discovery Pages
+22.	Discover Groups Page (pages/discover/index.tsx) 
+	Create new
+	Search form for public groups
+	Filters by sport, location
+	Results as group cards
+	Join request function
+23.	Public Group Preview Page (pages/discover/groups/[groupId].tsx) 
+	Create new
+	Limited view of public group info
+	Member count and activity level
+	Join request button
+	Review/testimonials section (optional)
+Notification and Messaging Pages
+24.	Notifications Page (pages/notifications.tsx) 
+	Create new
+	List of all notifications
+	Mark as read functionality
+	Filter by type
+	Clear all option
+25.	Group Chat Page (pages/groups/[groupId]/chat.tsx) 
+	Create new
+	Message thread for group
+	Member list sidebar
+	Media sharing controls
+	Announcements section
+Settings Pages
+26.	Account Settings Page (pages/settings/account.tsx) 
+	Create new or modify existing
+	Email/password management
+	Account deletion
+	Data export
+27.	Notification Settings Page (pages/settings/notifications.tsx) 
+	Create new
+	Controls for different notification types
+	Email notification preferences
+	Push notification settings
+28.	Privacy Settings Page (pages/settings/privacy.tsx) 
+	Create new
+	Profile visibility controls
+	Data sharing preferences
+	Location sharing settings
+Utility Pages
+29.	Error Page (pages/404.tsx and pages/_error.tsx) 
+	Modify existing
+	User-friendly error messages
+	Navigation back to safety
+30.	Help & Support Page (pages/help.tsx) 
+	Create new
+	FAQ section
+	Contact form
+	User guide links
+31.	Terms & Privacy Page (pages/legal.tsx) 
+	Create new
+	Terms of service
+	Privacy policy
+	Data usage information
+Development Priority Suggestion
+For solo development, I recommend focusing on these pages first:
+Top Priority (Core Functionality)
+1.	Dashboard (6)
+2.	Groups List (8)
+3.	Group Creation (9)
+4.	Group Details (10)
+5.	Game Creation (16)
+6.	Game Details (17)
+7.	Profile Setup (4)
+Secondary Priority
+8.	Group Members (12)
+9.	Group Games List (15)
+10.	Team Formation (19)
+11.	Game Results (20)
+12.	Group Invitation (13)
+Final Polish
+13.	Discover Groups (22)
+14.	Notifications (24)
+15.	Settings pages (26-28)
+16.	Help & Support (30)
+Implementation Notes
+1.	Next.js Dynamic Routing 
+	Use Next.js dynamic routes for pages with IDs (e.g., [groupId], [gameId])
+	Implement proper loading states and error handling
+2.	Responsive Design 
+	Ensure all pages work well on mobile devices
+	Consider mobile-first design for key interactions
+3.	Component Reuse 
+	Create reusable components for common elements: 
+	Group cards
+	Game cards
+	User avatars
+	Forms
+	Lists
+4.	Progressive Enhancement 
+	Start with minimal viable versions of each page
+	Add advanced features incrementally
+	Focus on core user flows first
+

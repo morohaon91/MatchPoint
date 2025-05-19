@@ -1,0 +1,40 @@
+MatchPoint - Project Summary
+What is it?
+Sports Team Organizer is a web application that helps friends organize recreational sports activities. It solves the common problem of coordinating pickup games, managing teams, and keeping track of who's playing when.
+Key Features
+Group Management
+•	Create private sports groups for different activities (basketball, soccer, tennis, etc.)
+•	Invite friends using shareable links or codes
+•	Manage members and assign organizer roles
+•	Choose whether groups are private or discoverable by others
+Game Scheduling
+•	Schedule one-time games with date, time, and location
+•	Set up recurring games (weekly Monday night basketball, etc.)
+•	Define player limits and manage waitlists automatically
+•	Allow members to sign up or mark absences in advance
+Team Organization
+•	Track who's coming to each game
+•	Divide players into balanced teams
+•	Record game results and basic statistics
+•	Communicate through game-specific chats
+Smart Registration
+•	Automatic waitlist promotion when spots open up
+•	Priority registration for regular players in recurring games
+•	Easy RSVP and reminder system
+•	Option to bring occasional guests to open games
+Who is it for?
+•	Recreational sports enthusiasts
+•	Neighborhood pickup game organizers
+•	Friends who play sports together regularly
+•	Community sports coordinators
+The Problem It Solves
+Managing sports meetups through group chats or spreadsheets is messy. Our app eliminates common frustrations like:
+•	"Who's coming this week?"
+•	"Are we playing on Sunday?"
+•	"I can't find the address!"
+•	"We have 13 players - how do we make fair teams?"
+Technology
+Built using Next.js and Firebase, the app provides real-time updates, works on both mobile and desktop, and doesn't require sharing exact location data for privacy concerns.
+Differentiator
+Unlike professional team management apps, Sports Team Organizer is built specifically for casual, recreational play. It focuses on simplicity while solving the unique challenges of organizing recurring neighborhood games with friends.
+

@@ -21,41 +21,44 @@ interface SmartDashboardProps {
 
 // Helper function to get sport icon
 export const getSportIcon = (sport: SportType): React.ReactNode => {
+  // Using a larger size for better visual impact, can be adjusted per usage
+  const iconSize = "w-6 h-6"; 
   switch (sport) {
-    case SportType.TENNIS:
+    case SportType.TENNIS: // Tennis Ball Icon
       return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-          <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={iconSize}>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2.5-10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5c.48 0 .9-.23 1.19-.59.51.49 1.2.84 1.98.94v1.65c0 .28.22.5.5.5s.5-.22.5-.5V13.5c.78-.1 1.47-.45 1.98-.94.29.36.71.59 1.19.59.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5c-.48 0-.9.23-1.19.59-.51-.49-1.2-.84-1.98-.94V7.5c0-.28-.22-.5-.5-.5s-.5.22-.5.5v1.65c-.78.1-1.47.45-1.98.94-.29-.36-.71-.59-1.19-.59zM12 8.5c.64 0 1.2.29 1.58.75.38-.46.94-.75 1.58-.75.55 0 1 .45 1 1s-.45 1-1 1c-.64 0-1.2-.29-1.58-.75-.38.46-.94.75-1.58.75-.55 0-1-.45-1-1s.45-1 1-1zm0 5c-.64 0-1.2-.29-1.58-.75-.38.46-.94.75-1.58.75-.55 0-1-.45-1-1s.45-1 1-1c.64 0 1.2.29 1.58.75.38-.46.94-.75 1.58.75.55 0 1 .45 1 1s-.45 1-1 1z"/>
         </svg>
       );
-    case SportType.BASKETBALL:
+    case SportType.BASKETBALL: // Basketball Icon
       return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-4.28 9.22a.75.75 0 000 1.06l3 3a.75.75 0 101.06-1.06l-1.72-1.72h5.69a.75.75 0 000-1.5h-5.69l1.72-1.72a.75.75 0 00-1.06-1.06l-3 3z" clipRule="evenodd" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={iconSize}>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2.5-12.5c.2-.2.48-.3.75-.3s.55.1.75.3l1.25 1.25c.2.2.3.48.3.75s-.1.55-.3.75L11.25 12l1.25 1.25c.2.2.3.48.3.75s-.1.55-.3.75l-1.25 1.25c-.2.2-.48.3-.75.3s-.55-.1-.75-.3L8.5 14.25c-.2-.2-.3-.48-.3-.75s.1-.55.3-.75L9.75 12 8.5 10.75c-.2-.2-.3-.48-.3-.75s.1-.55.3-.75l1-1zm5 5c.2-.2.48-.3.75-.3s.55.1.75.3l1.25 1.25c.2.2.3.48.3.75s-.1.55-.3.75L16.25 17l1.25 1.25c.2.2.3.48.3.75s-.1.55-.3.75l-1.25 1.25c-.2.2-.48.3-.75.3s-.55-.1-.75-.3L13.5 19.25c-.2-.2-.3-.48-.3-.75s.1-.55.3-.75L14.75 17l-1.25-1.25c-.2-.2-.3-.48-.3-.75s.1-.55.3-.75l1-1zM12 6.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5S10.5 8.83 10.5 8 9.17 6.5 12 6.5zm0 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5S12.83 15.5 12 15.5z"/>
         </svg>
       );
-    case SportType.SOCCER:
+    case SportType.SOCCER: // Soccer Ball Icon
       return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm3 10.5a.75.75 0 000-1.5H9a.75.75 0 000 1.5h6z" clipRule="evenodd" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={iconSize}>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-4.5-9.5l3-3 .71.71-2.29 2.29H13v-1h-1.59l2.29-2.29-.71-.71-3 3-1.06 1.06L7.5 12.5zm4.5 2l-3 3-.71-.71 2.29-2.29H11v1h1.59l-2.29 2.29.71.71 3-3 1.06-1.06L16.5 11.5z"/>
         </svg>
       );
-    case SportType.VOLLEYBALL:
+    case SportType.VOLLEYBALL: // Volleyball Icon
       return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm.53 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v5.69a.75.75 0 001.5 0v-5.69l1.72 1.72a.75.75 0 101.06-1.06l-3-3z" clipRule="evenodd" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={iconSize}>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v2.28c.6.43 1 .94 1.28 1.54.28-.6.68-1.11 1.28-1.54V7h2v2.28c-.6.43-1 .94-1.28 1.54.58.64.93 1.43.93 2.28 0 .9-.39 1.69-1 2.26v2.64h-2v-2.64c-.61-.57-1-1.36-1-2.26 0-.85.35-1.64.93-2.28C12 10.22 11.6 9.71 11 9.28V7zm1 6c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
         </svg>
       );
-    case SportType.BASEBALL:
+    case SportType.BASEBALL: // Baseball Icon
       return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-          <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={iconSize}>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-3.5-9c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5zm5 0c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5zm-2.5-3c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5z"/>
         </svg>
       );
-    default:
+    default: // Generic placeholder (e.g., a simple circle or sports medal)
       return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clipRule="evenodd" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={iconSize}>
+          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm0 16.5a6.75 6.75 0 100-13.5 6.75 6.75 0 000 13.5z" clipRule="evenodd" />
+          <path fillRule="evenodd" d="M12 7.5a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3A.75.75 0 0112 7.5zM12 15a.75.75 0 01.75.75v.008a.75.75 0 01-1.5 0V15.75A.75.75 0 0112 15z" clipRule="evenodd" />
         </svg>
       );
   }
@@ -71,21 +74,25 @@ export default function SmartDashboard({
   onOpenCreateGameModal,
 }: SmartDashboardProps) {
   return (
-    <div className="space-y-8 bg-neutral-50 dark:bg-neutral-900 p-4 rounded-xl">
-      <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-md border border-neutral-100 dark:border-neutral-700">
-        <h1 className="text-2xl font-bold text-primary-700 dark:text-primary-300 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 mr-2 text-primary-500">
-            <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+    <div className="space-y-8 bg-neutral-100 dark:bg-neutral-950 p-6 rounded-lg"> {/* Adjusted padding and background */}
+      {/* Enhanced Welcome Card */}
+      <div className="bg-gradient-to-br from-white to-neutral-50 dark:from-neutral-800 dark:to-neutral-850 p-6 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 transition-all duration-300 hover:shadow-xl">
+        <div className="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 mr-3 text-primary-500 dark:text-primary-400">
+            {/* Using a more vibrant/welcoming icon - e.g., Sparkles or a simple checkmark in a circle */}
+            <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" clipRule="evenodd" />
           </svg>
-          Welcome back, {currentUser.displayName || "Player"}!
-        </h1>
-        <p className="text-neutral-500 dark:text-neutral-400 mt-1 ml-9">
-          Here's your personalized dashboard
+          <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100">
+            Welcome back, {currentUser.displayName || "Player"}!
+          </h1>
+        </div>
+        <p className="text-neutral-600 dark:text-neutral-400 mt-2 ml-11 text-md">
+          Here's your personalized dashboard, ready for action.
         </p>
       </div>
 
       {/* Main dashboard layout - enhanced grid with better spacing */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Slightly reduced gap for a more compact feel if desired, or keep at 8 */}
         {/* Column 1 */}
         <div className="space-y-8 lg:col-span-2">
           <NextGameWidget games={userGames} currentUser={currentUser} />

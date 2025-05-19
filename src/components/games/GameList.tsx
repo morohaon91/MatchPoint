@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Game, ParticipantStatus } from "@/lib/types/models";
-import GameCard from "./GameCard";
 import { isDateInPast, formatDate, formatTime } from "@/lib/utils/dateUtils";
 import ModernGameCard from "./ModernGameCard";
 
@@ -247,15 +246,17 @@ export default function GameList({
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredGames.map((game) => (
             <ModernGameCard
+              isRegistered={
+                userParticipantStatus[game.id] === ParticipantStatus.CONFIRMED
+              }
+              isWaitlisted={
+                userParticipantStatus[game.id] === ParticipantStatus.WAITLIST
+              }
+              onRegister={onJoinGame ? () => onJoinGame(game) : undefined}
+              onUnregister={onLeaveGame ? () => onLeaveGame(game) : undefined}
               key={game.id}
               game={game}
-              isAdmin={isAdmin}
-              isOrganizer={isOrganizer}
-              userParticipantStatus={userParticipantStatus[game.id] || null}
-              onEdit={onEditGame ? () => onEditGame(game) : undefined}
-              onDelete={onDeleteGame ? () => onDeleteGame(game) : undefined}
-              onJoin={onJoinGame ? () => onJoinGame(game) : undefined}
-              onLeave={onLeaveGame ? () => onLeaveGame(game) : undefined}
+              waitlistCount={game.waitlistIds.length}
             />
           ))}
         </div>

@@ -10,7 +10,6 @@ export default function SubscriptionCardContainer({
   products: StripeProductData[];
   salesCall?: string;
 }) {
-  console.log("values", products);
   return (
     <div className="flex flex-col space-y-10 items-center justify-center w-full">
       {salesCall && (

@@ -13,14 +13,14 @@ export default async function Home() {
 
       <ExplanationSection />
 
-      {/* {products.length > 0 ? ( */}
-      <SubscriptionCardContainer
-        products={products}
-        salesCall="Save money and time, buy my SaaS app today and you won't regret it!"
-      />
-      {/* ) : (
+      {products.length > 0 ? (
+        <SubscriptionCardContainer
+          products={products}
+          salesCall="Save money and time, buy my SaaS app today and you won't regret it!"
+        />
+      ) : (
         <p>No subscription plans available at the moment.</p>
-      )} */}
+      )}
 
       {/*
       This is an example of how to use the StripePricingTable component. Incase you don't want to build your own.

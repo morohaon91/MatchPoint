@@ -34,7 +34,7 @@ export default function CreateGroupPage() {
           photoURL: groupData.photoURL || undefined, // Corrected from null to undefined
           invitationCode: groupData.invitationCode, // Pass invitationCode
         },
-        currentUser.uid,
+        currentUser.uid
       );
 
       // Redirect to the new group's page
@@ -71,7 +71,7 @@ export default function CreateGroupPage() {
       </Link>
 
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Create New Group
+        {/* Create New Group */}
       </h1>
 
       {error && (

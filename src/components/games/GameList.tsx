@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Game, ParticipantStatus } from "@/lib/types/models";
-import GameCard from "./GameCard";
 import { isDateInPast, formatDate, formatTime } from "@/lib/utils/dateUtils";
+import ModernGameCard from "./ModernGameCard";
 
 interface GameListProps {
   games: Game[];
@@ -39,7 +39,7 @@ export default function GameList({
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [viewMode, setViewMode] = useState<"listView" | "calendar">("listView");
   const [sortBy, setSortBy] = useState<"date-asc" | "date-desc" | "title">(
-    "date-asc",
+    "date-asc"
   );
 
   // Update filtered games when props change or filters change
@@ -55,12 +55,12 @@ export default function GameList({
       } else if (statusFilter === "participating") {
         result = result.filter(
           (game) =>
-            userParticipantStatus[game.id] === ParticipantStatus.CONFIRMED,
+            userParticipantStatus[game.id] === ParticipantStatus.CONFIRMED
         );
       } else if (statusFilter === "waitlisted") {
         result = result.filter(
           (game) =>
-            userParticipantStatus[game.id] === ParticipantStatus.WAITLIST,
+            userParticipantStatus[game.id] === ParticipantStatus.WAITLIST
         );
       }
     }
@@ -72,7 +72,7 @@ export default function GameList({
         (game) =>
           game.title.toLowerCase().includes(term) ||
           (game.description && game.description.toLowerCase().includes(term)) ||
-          (game.location && game.location.toLowerCase().includes(term)),
+          (game.location && game.location.toLowerCase().includes(term))
       );
     }
 
@@ -81,13 +81,13 @@ export default function GameList({
       result.sort(
         (a, b) =>
           new Date(a.scheduledTime).getTime() -
-          new Date(b.scheduledTime).getTime(),
+          new Date(b.scheduledTime).getTime()
       );
     } else if (sortBy === "date-desc") {
       result.sort(
         (a, b) =>
           new Date(b.scheduledTime).getTime() -
-          new Date(a.scheduledTime).getTime(),
+          new Date(a.scheduledTime).getTime()
       );
     } else if (sortBy === "title") {
       result.sort((a, b) => a.title.localeCompare(b.title));
@@ -245,16 +245,18 @@ export default function GameList({
       ) : viewMode === "listView" ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredGames.map((game) => (
-            <GameCard
+            <ModernGameCard
+              isRegistered={
+                userParticipantStatus[game.id] === ParticipantStatus.CONFIRMED
+              }
+              isWaitlisted={
+                userParticipantStatus[game.id] === ParticipantStatus.WAITLIST
+              }
+              onRegister={onJoinGame ? () => onJoinGame(game) : undefined}
+              onUnregister={onLeaveGame ? () => onLeaveGame(game) : undefined}
               key={game.id}
               game={game}
-              isAdmin={isAdmin}
-              isOrganizer={isOrganizer}
-              userParticipantStatus={userParticipantStatus[game.id] || null}
-              onEdit={onEditGame ? () => onEditGame(game) : undefined}
-              onDelete={onDeleteGame ? () => onDeleteGame(game) : undefined}
-              onJoin={onJoinGame ? () => onJoinGame(game) : undefined}
-              onLeave={onLeaveGame ? () => onLeaveGame(game) : undefined}
+              waitlistCount={game.waitlistIds.length}
             />
           ))}
         </div>

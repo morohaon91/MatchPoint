@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Group, SportType } from "@/lib/types/models";
 import { Button } from "@/components/ui/Button";
 import {
@@ -18,6 +18,154 @@ interface ModernGroupFormProps {
   className?: string;
 }
 
+const getSportIcon = (sport: SportType): JSX.Element => {
+  switch (sport) {
+    case SportType.TENNIS:
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+      );
+    case SportType.BASKETBALL:
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <circle cx="12" cy="12" r="10" strokeWidth={2} />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M2 12h20"
+          />
+        </svg>
+      );
+    case SportType.SOCCER:
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <circle cx="12" cy="12" r="10" strokeWidth={2} />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 2v4m0 16v-4m-10-8h4m16 0h-4m-8 0l-4-4m8 0l4-4m-8 16l-4 4m8 0l4 4"
+          />
+        </svg>
+      );
+    case SportType.VOLLEYBALL:
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <circle cx="12" cy="12" r="10" strokeWidth={2} />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M7 15l5-5 5 5"
+          />
+        </svg>
+      );
+    case SportType.BASEBALL:
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <circle cx="12" cy="12" r="10" strokeWidth={2} />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9.5 9.5c1.5-1.5 3.5-1.5 5 0m-5 5c1.5 1.5 3.5 1.5 5 0"
+          />
+        </svg>
+      );
+    default:
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
+        </svg>
+      );
+  }
+};
+
+const SportButton = ({
+  sport,
+  selected,
+  onSportChange,
+}: {
+  sport: SportType;
+  selected: boolean;
+  onSportChange: (sport: SportType) => void;
+}) => (
+  <button
+    type="button"
+    onClick={() => onSportChange(sport)}
+    className={`flex flex-col items-center justify-center p-3 rounded-lg transition-all ${
+      selected
+        ? `bg-sport-${sport.toLowerCase()}-primary/10 border-2 border-sport-${sport.toLowerCase()}-primary text-sport-${sport.toLowerCase()}-primary`
+        : "bg-neutral-100 border-2 border-transparent hover:bg-neutral-200"
+    }`}
+  >
+    <div
+      className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
+        selected
+          ? `bg-sport-${sport.toLowerCase()}-primary text-white`
+          : "bg-neutral-200"
+      }`}
+    >
+      {getSportIcon(sport)}
+    </div>
+    <span className="text-sm font-medium">{sport}</span>
+  </button>
+);
+
 /**
  * ModernGroupForm component for creating and editing groups
  */
@@ -28,7 +176,6 @@ export default function ModernGroupForm({
   isLoading = false,
   className = "",
 }: ModernGroupFormProps) {
-  // Form state
   const [formData, setFormData] = useState<Partial<Group>>({
     name: "",
     description: "",
@@ -36,223 +183,45 @@ export default function ModernGroupForm({
     location: "",
     isPublic: true,
     photoURL: "",
-    invitationCode: "", // Add invitationCode to state
+    invitationCode: "",
     ...initialData,
   });
-
-  // Error state
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Handle input changes
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Clear error when field is edited
-    if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
-  // Handle checkbox changes
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFormData((prev) => ({ ...prev, [name]: checked }));
   };
 
-  // Handle sport selection
   const handleSportChange = (sport: SportType) => {
     setFormData((prev) => ({ ...prev, sport }));
-
-    // Clear error when field is edited
-    if (errors.sport) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.sport;
-        return newErrors;
-      });
-    }
+    setErrors((prevErrors) => ({ ...prevErrors, sport: "" }));
   };
 
-  // Validate form
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-
     if (!formData.name?.trim()) {
       newErrors.name = "Group name is required";
     }
-
     if (!formData.sport) {
       newErrors.sport = "Sport is required";
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
     if (validateForm()) {
       onSubmit(formData);
-    }
-  };
-
-  // Sport selection button
-  const SportButton = ({
-    sport,
-    selected,
-  }: {
-    sport: SportType;
-    selected: boolean;
-  }) => (
-    <button
-      type="button"
-      onClick={() => handleSportChange(sport)}
-      className={`flex flex-col items-center justify-center p-3 rounded-lg transition-all ${
-        selected
-          ? `bg-sport-${sport.toLowerCase()}-primary/10 border-2 border-sport-${sport.toLowerCase()}-primary text-sport-${sport.toLowerCase()}-primary`
-          : "bg-neutral-100 border-2 border-transparent hover:bg-neutral-200"
-      }`}
-    >
-      {/* Sport icon */}
-      <div
-        className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
-          selected
-            ? `bg-sport-${sport.toLowerCase()}-primary text-white`
-            : "bg-neutral-200"
-        }`}
-      >
-        {getSportIcon(sport)}
-      </div>
-      <span className="text-sm font-medium">{sport}</span>
-    </button>
-  );
-
-  // Get sport icon based on sport type
-  const getSportIcon = (sport: SportType) => {
-    switch (sport) {
-      case SportType.TENNIS:
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-        );
-      case SportType.BASKETBALL:
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <circle cx="12" cy="12" r="10" strokeWidth={2} />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M2 12h20"
-            />
-          </svg>
-        );
-      case SportType.SOCCER:
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <circle cx="12" cy="12" r="10" strokeWidth={2} />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 2v4m0 16v-4m-10-8h4m16 0h-4m-8 0l-4-4m8 0l4-4m-8 16l-4 4m8 0l4 4"
-            />
-          </svg>
-        );
-      case SportType.VOLLEYBALL:
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <circle cx="12" cy="12" r="10" strokeWidth={2} />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M7 15l5-5 5 5"
-            />
-          </svg>
-        );
-      case SportType.BASEBALL:
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <circle cx="12" cy="12" r="10" strokeWidth={2} />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9.5 9.5c1.5-1.5 3.5-1.5 5 0m-5 5c1.5 1.5 3.5 1.5 5 0"
-            />
-          </svg>
-        );
-      default:
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 10V3L4 14h7v7l9-11h-7z"
-            />
-          </svg>
-        );
     }
   };
 
@@ -266,7 +235,6 @@ export default function ModernGroupForm({
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Group photo URL */}
           <div className="space-y-2">
             <label
               htmlFor="photoURL"
@@ -298,7 +266,6 @@ export default function ModernGroupForm({
             )}
           </div>
 
-          {/* Group name */}
           <div className="space-y-2">
             <label
               htmlFor="name"
@@ -323,7 +290,6 @@ export default function ModernGroupForm({
             )}
           </div>
 
-          {/* Group description */}
           <div className="space-y-2">
             <label
               htmlFor="description"
@@ -342,7 +308,6 @@ export default function ModernGroupForm({
             />
           </div>
 
-          {/* Sport selection */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-neutral-700">
               Sport <span className="text-error-500">*</span>
@@ -353,6 +318,7 @@ export default function ModernGroupForm({
                   key={sport}
                   sport={sport}
                   selected={formData.sport === sport}
+                  onSportChange={handleSportChange}
                 />
               ))}
             </div>
@@ -361,7 +327,6 @@ export default function ModernGroupForm({
             )}
           </div>
 
-          {/* Location */}
           <div className="space-y-2">
             <label
               htmlFor="location"
@@ -380,7 +345,6 @@ export default function ModernGroupForm({
             />
           </div>
 
-          {/* Privacy setting */}
           <div className="space-y-2">
             <span className="block text-sm font-medium text-neutral-700">
               Privacy
@@ -412,7 +376,6 @@ export default function ModernGroupForm({
             </p>
           </div>
 
-          {/* Invitation Code */}
           <div className="space-y-2">
             <label
               htmlFor="invitationCode"

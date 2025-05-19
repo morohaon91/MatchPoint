@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  CSSProperties,
+} from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Group, GroupMember, Game } from "@/lib/types/models";
 import MembersList from "@/components/groups/MembersList";
@@ -22,124 +28,100 @@ import {
 import { db } from "@/lib/firebase/firebaseClient";
 import { firestoreConverter } from "@/lib/firebase/converters";
 
-export default function GroupDetailsPage() {
-  const params = useParams();
+const GroupDetailsPage: React.FC = () => {
+  const { id: groupId } = useParams();
   const router = useRouter();
-  const groupId = params.id as string;
   const { currentUser } = useAuth();
-
   const [activeTab, setActiveTab] = useState<"games" | "members" | "settings">(
-    "games",
+    "games"
   );
-  const [showCreateGameForm, setShowCreateGameForm] = useState<boolean>(false);
+  const [showCreateGameForm, setShowCreateGameForm] = useState(false);
 
-  // Memoize Firestore references and queries to ensure stability for hooks
+  // Firestore References
   const groupRef = useMemo(
     () => doc(db, "groups", groupId).withConverter(firestoreConverter<Group>()),
-    [groupId],
+    [groupId]
   );
-  const [group, groupLoading, groupError] = useDocumentData<Group>(groupRef);
-
   const membersRef = useMemo(
     () =>
       collection(db, "groups", groupId, "members").withConverter(
-        firestoreConverter<GroupMember>(),
+        firestoreConverter<GroupMember>()
       ),
-    [groupId],
+    [groupId]
   );
-  const [rawMembers, membersLoading, membersError] =
-    useCollectionData<GroupMember>(membersRef);
-
-  // Process members without adding isAdmin property
-  const members = useMemo(() => {
-    if (!rawMembers || !group) return [];
-    return rawMembers;
-  }, [rawMembers, group]);
-
   const gamesCollectionRef = useMemo(() => collection(db, "games"), []);
-
   const nowTimestamp = useMemo(() => Timestamp.now(), []);
 
-  const upcomingGamesQuery = useMemo(() => {
-    try {
-      // Create query with all conditions in a single call
-      const q = query(
-        gamesCollectionRef, 
+  // Firestore Data Hooks
+  const [group, groupLoading, groupError] = useDocumentData<Group>(groupRef);
+  const [rawMembers, membersLoading, membersError] =
+    useCollectionData<GroupMember>(membersRef);
+  const upcomingGamesQuery = useMemo(
+    () =>
+      query(
+        gamesCollectionRef,
         where("groupId", "==", groupId),
         where("scheduledTime", ">=", nowTimestamp),
         orderBy("scheduledTime", "asc")
-      ).withConverter(firestoreConverter<Game>());
-      
-      return q;
-    } catch (error) {
-      console.error("Error creating upcoming games query:", error);
-      return null;
-    }
-  }, [gamesCollectionRef, groupId, nowTimestamp]);
+      ).withConverter(firestoreConverter<Game>()),
+    [gamesCollectionRef, groupId, nowTimestamp]
+  );
   const [upcomingGames, upcomingGamesLoading, upcomingGamesError] =
     useCollectionData<Game>(upcomingGamesQuery);
-
-  const pastGamesQuery = useMemo(() => {
-    try {
-      // Create query with all conditions in a single call
-      const q = query(
+  const pastGamesQuery = useMemo(
+    () =>
+      query(
         gamesCollectionRef,
         where("groupId", "==", groupId),
         where("scheduledTime", "<", nowTimestamp),
         orderBy("scheduledTime", "desc")
-      ).withConverter(firestoreConverter<Game>());
-      
-      return q;
-    } catch (error) {
-      console.error("Error creating past games query:", error);
-      return null;
-    }
-  }, [gamesCollectionRef, groupId, nowTimestamp]);
+      ).withConverter(firestoreConverter<Game>()),
+    [gamesCollectionRef, groupId, nowTimestamp]
+  );
   const [pastGames, pastGamesLoading, pastGamesError] =
     useCollectionData<Game>(pastGamesQuery);
 
-  // Calculate canManage using useMemo to prevent re-calculation if dependencies are stable
-  const canManage = useMemo(() => {
-    if (currentUser && group && group.adminIds) {
-      return (
-        group.adminIds.includes(currentUser.uid) ||
-        group.createdBy === currentUser.uid
-      );
-    }
-    return false;
-  }, [currentUser, group]);
+  // Memoized Values
+  const members = useMemo(() => rawMembers ?? [], [rawMembers]);
+  const canManage = useMemo(
+    () =>
+      currentUser &&
+      group &&
+      (group.adminIds?.includes(currentUser.uid) ||
+        group.createdBy === currentUser.uid),
+    [currentUser, group]
+  );
+  const enhancedUpcomingGames = useMemo(
+    () =>
+      upcomingGames?.map((game) => ({
+        ...game,
+        isAdmin: canManage ?? false,
+      })) ?? [],
+    [upcomingGames, canManage]
+  );
+  const enhancedPastGames = useMemo(
+    () =>
+      pastGames?.map((game) => ({ ...game, isAdmin: canManage ?? false })) ??
+      [],
+    [pastGames, canManage]
+  );
 
-  // Create enhanced game arrays with isAdmin property for each game
-  const enhancedUpcomingGames = useMemo(() => {
-    if (!upcomingGames) return [];
-    return upcomingGames.map(game => ({
-      ...game,
-      isAdmin: canManage // Add isAdmin property to each game
-    }));
-  }, [upcomingGames, canManage]);
-
-  const enhancedPastGames = useMemo(() => {
-    if (!pastGames) return [];
-    return pastGames.map(game => ({
-      ...game,
-      isAdmin: canManage // Add isAdmin property to each game
-    }));
-  }, [pastGames, canManage]);
-
-  const handleEditGroup = () => {
+  // Handlers
+  const handleEditGroup = useCallback(() => {
     if (group) {
       router.push(`/app/groups/edit/${groupId}`);
     }
-  };
+  }, [router, groupId, group]);
 
-  const handleCreateGameClick = () => {
+  const handleCreateGameClick = useCallback(() => {
     setShowCreateGameForm(true);
-  };
+  }, []);
 
-  const handleCloseCreateGameForm = () => {
+  const handleCloseCreateGameForm = useCallback(() => {
     setShowCreateGameForm(false);
-  };
+  }, []);
 
+  // Loading and Error States
   const overallLoading =
     groupLoading || membersLoading || upcomingGamesLoading || pastGamesLoading;
   const overallError =
@@ -160,8 +142,7 @@ export default function GroupDetailsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           <p>
-            {(overallError && overallError.message) ||
-              "Group not found or an error occurred."}
+            {overallError?.message || "Group not found or an error occurred."}
           </p>
         </div>
         <button
@@ -211,7 +192,7 @@ export default function GroupDetailsPage() {
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <span className="text-7xl font-bold text-white opacity-50">
-                {group.name.charAt(0).toUpperCase()}
+                {group.name?.charAt(0)?.toUpperCase()}
               </span>
             </div>
           )}
@@ -222,7 +203,9 @@ export default function GroupDetailsPage() {
                 {group.sport}
               </span>
               <span
-                className={`px-3 py-1 text-xs font-semibold text-white rounded-full shadow ${group.isPublic ? "bg-green-500" : "bg-red-500"}`}
+                className={`px-3 py-1 text-xs font-semibold text-white rounded-full shadow ${
+                  group.isPublic ? "bg-green-500" : "bg-red-500"
+                }`}
               >
                 {group.isPublic ? "Public" : "Private"}
               </span>
@@ -237,7 +220,6 @@ export default function GroupDetailsPage() {
             <p className="text-gray-700">{group.description}</p>
           </div>
         )}
-        {/* Create Game Button - Prominently placed */}
         {canManage && (
           <div className="p-6 border-b border-gray-200">
             <button
@@ -264,7 +246,7 @@ export default function GroupDetailsPage() {
         )}
       </div>
 
-      {/* Modal for Create Game Form with ModernGameForm */}
+      {/* Modal for Create Game Form */}
       {showCreateGameForm && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
           <div className="relative mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
@@ -295,16 +277,9 @@ export default function GroupDetailsPage() {
             <div className="mt-2">
               <ModernGameForm
                 initialData={{ groupId }}
-                onSubmit={async (gameData: Partial<Game>) => {
-                  try {
-                    // Here you would handle the game creation
-                    // For now, we'll just close the modal
-                    handleCloseCreateGameForm();
-                    // Redirect to the games creation page with groupId
-                    router.push(`/app/games/create?groupId=${groupId}`);
-                  } catch (error) {
-                    console.error("Error creating game:", error);
-                  }
+                onSubmit={async () => {
+                  handleCloseCreateGameForm();
+                  router.push(`/app/games/create?groupId=${groupId}`);
                 }}
                 onCancel={handleCloseCreateGameForm}
               />
@@ -346,8 +321,7 @@ export default function GroupDetailsPage() {
                 games={enhancedUpcomingGames}
                 isLoading={upcomingGamesLoading}
                 emptyMessage="No upcoming games scheduled for this group."
-                // We're now passing the isAdmin at the GameList component level as well
-                isAdmin={canManage}
+                isAdmin={canManage ?? false}
               />
             </div>
             <div>
@@ -358,7 +332,7 @@ export default function GroupDetailsPage() {
                 games={enhancedPastGames}
                 isLoading={pastGamesLoading}
                 emptyMessage="No past games found for this group."
-                isAdmin={canManage}
+                isAdmin={canManage ?? false}
               />
             </div>
           </div>
@@ -367,22 +341,19 @@ export default function GroupDetailsPage() {
         {activeTab === "members" && (
           <div>
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Group Members ({members?.length || 0})
+              Group Members ({members.length})
             </h2>
             {membersLoading && <p>Loading members...</p>}
-            {membersError &&
-              typeof membersError === "object" &&
-              membersError !== null &&
-              "message" in membersError && (
-                <p className="text-red-500">
-                  Error loading members: {String((membersError as any).message)}
-                </p>
-              )}
-            {members && members.length > 0 && group && (
+            {membersError && (
+              <p className="text-red-500">
+                Error loading members: {membersError.message}
+              </p>
+            )}
+            {members.length > 0 && group && (
               <MembersList
                 group={group}
                 members={members}
-                isAdmin={canManage}
+                isAdmin={canManage ?? false}
                 onMemberInvited={() => console.log("Invite member action")}
                 onRoleChange={(memberId, role) =>
                   console.log(`Change role for ${memberId} to ${role}`)
@@ -392,7 +363,7 @@ export default function GroupDetailsPage() {
                 }
               />
             )}
-            {members && members.length === 0 && !membersLoading && (
+            {members.length === 0 && !membersLoading && (
               <p>No members found in this group yet.</p>
             )}
           </div>
@@ -432,4 +403,6 @@ export default function GroupDetailsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default GroupDetailsPage;

@@ -7,7 +7,6 @@ import NextGameWidget from "./widgets/NextGameWidget";
 import PendingInvitesWidget from "./widgets/PendingInvitesWidget";
 import QuickCreateGameWidget from "./widgets/QuickCreateGameWidget";
 import UserGroupsPreviewWidget from "./widgets/UserGroupsPreviewWidget";
-import GamesCalendarWidget from "./widgets/GamesCalendarWidget";
 
 interface SmartDashboardProps {
   currentUser: User;
@@ -57,7 +56,6 @@ export default function SmartDashboard({
             currentUser={currentUser}
             onOpenCreateGameModal={onOpenCreateGameModal}
           />
-          <GamesCalendarWidget games={userGames} currentUser={currentUser} />
         </div>
       </div>
     </div>

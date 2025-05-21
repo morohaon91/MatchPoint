@@ -8,7 +8,7 @@ export class AuthService {
 
   async getUserClaims(
     user: User,
-    forceRefresh: boolean = false,
+    forceRefresh: boolean = false
   ): Promise<{ [key: string]: any }> {
     const tokenResult = await user.getIdTokenResult(forceRefresh);
     return tokenResult.claims;

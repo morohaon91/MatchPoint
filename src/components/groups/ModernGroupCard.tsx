@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { GroupWithLastGame } from "@/app/app/groups/page"; // Use the enhanced type
-import { Game, SportType } from "@/lib/types/models"; // Keep SportType if used directly, Game for lastGame
+import { GroupWithLastGame } from "@/app/app/groups/page";
+import { Game, SportType } from "@/lib/types/models";
 import {
   Card,
   CardHeader,
@@ -17,33 +17,39 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@/components/ui/Avatar";
-import { format, parseISO } from "date-fns"; // For formatting dates
+import { format, parseISO } from "date-fns";
 
 interface ModernGroupCardProps {
-  group: GroupWithLastGame; // Updated prop type
-  // onJoin is removed as this page shows "my groups"
-  onLeave?: (groupId: string) => void; // Keep onLeave if functionality is desired
-  // isMember is implicitly true for this page, can be removed or defaulted if card is used elsewhere
-  // memberCount will come from group.memberCount or group.memberIds.length
+  group: GroupWithLastGame;
+  onLeave?: (groupId: string) => void;
   memberAvatars?: Array<{ id: string; photoURL?: string; name?: string }>;
-  // gamesCount is not being explicitly passed for now, card should handle its absence
   className?: string;
 }
 
-/**
- * ModernGroupCard component displays a group card with modern UI
- */
 export default function ModernGroupCard({
   group,
   onLeave,
   memberAvatars = [],
-  // gamesCount = 0, // Not explicitly passed for now
   className = "",
 }: ModernGroupCardProps) {
-  const { lastGame } = group; // Destructure lastGame from the group prop
+  const { lastGame } = group;
 
-  // Since this page is "My Groups", isMember is true.
-  // The "Join Group" button is not needed. "Leave Group" can be optional.
+  // Fixed date handling function
+  const formatGameDate = (date: Date | string | number) => {
+    try {
+      const dateObj =
+        date instanceof Date
+          ? date
+          : typeof date === "string"
+          ? parseISO(date)
+          : new Date(date);
+      return format(dateObj, "MMM d, yyyy");
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Invalid date";
+    }
+  };
+
   const actionButton = onLeave ? (
     <Button
       variant="outline"
@@ -62,12 +68,9 @@ export default function ModernGroupCard({
       variant="elevated"
       sportType={group.sport}
       isHoverable
-      className={`overflow-hidden ${className} flex flex-col`} // Added flex flex-col for footer positioning
+      className={`overflow-hidden ${className} flex flex-col`}
     >
       <div className="flex-grow">
-        {" "}
-        {/* Added flex-grow to push footer down */}
-        {/* Group image */}
         {group.photoURL ? (
           <div className="relative w-full h-40 overflow-hidden">
             <img
@@ -96,7 +99,6 @@ export default function ModernGroupCard({
             </div>
           </div>
         ) : (
-          // Placeholder for groups without photoURL, matching Dashboard style
           <div className="relative w-full h-40 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -117,21 +119,18 @@ export default function ModernGroupCard({
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg truncate">{group.name}</CardTitle>
-            {/* "Member" badge can be shown by default as this page is for user's groups */}
             <Badge variant="success" size="sm">
               Member
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="pt-2">
-          {/* Group description */}
           {group.description && (
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3 line-clamp-2">
               {group.description}
             </p>
           )}
 
-          {/* Location */}
           {group.location && (
             <div className="flex items-center text-xs text-neutral-500 dark:text-neutral-400 mb-3">
               <svg
@@ -158,7 +157,6 @@ export default function ModernGroupCard({
             </div>
           )}
 
-          {/* Group stats: Member Count and Last Game Played */}
           <div className="space-y-2 text-xs text-neutral-600 dark:text-neutral-400">
             <div className="flex items-center">
               <svg
@@ -180,7 +178,7 @@ export default function ModernGroupCard({
               </span>
             </div>
 
-            {lastGame && lastGame.scheduledTime && (
+            {lastGame?.scheduledTime && (
               <div className="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -197,11 +195,7 @@ export default function ModernGroupCard({
                   />
                 </svg>
                 <span>
-                  Last Game:{" "}
-                  {format(
-                    parseISO(lastGame.scheduledTime as string),
-                    "MMM d, yyyy",
-                  )}
+                  Last Game: {formatGameDate(lastGame.scheduledTime)}
                   {lastGame.title && (
                     <span className="italic"> - {lastGame.title}</span>
                   )}
@@ -229,18 +223,11 @@ export default function ModernGroupCard({
             )}
           </div>
 
-          {/* Member avatars (optional, if data is provided) */}
           {memberAvatars.length > 0 && (
             <div className="mt-3">
               <AvatarGroup limit={5} size="xs" spacing="tight">
-                {" "}
-                {/* Adjusted size and spacing */}
                 {memberAvatars.map((member) => (
-                  <Avatar
-                    key={member.id}
-                    size="xs" // Adjusted size
-                    sportType={group.sport} // Keep for consistent styling if Avatar uses it
-                  >
+                  <Avatar key={member.id} size="xs" sportType={group.sport}>
                     {member.photoURL ? (
                       <AvatarImage
                         src={member.photoURL}
@@ -262,15 +249,12 @@ export default function ModernGroupCard({
       </div>
 
       <CardFooter className="pt-3 mt-auto" withBorder>
-        {" "}
-        {/* Added mt-auto to push to bottom */}
         <div className="flex w-full justify-between items-center">
           <Link href={`/app/groups/${group.id}`} passHref>
             <Button
               variant="ghost"
               size="sm"
-              className="text-primary-500 hover:text-primary-600" // Ensure consistent link styling
-              // Removed 'as="a"' and 'legacyBehavior' from Link as Button is a direct child
+              className="text-primary-500 hover:text-primary-600"
             >
               View Details
             </Button>

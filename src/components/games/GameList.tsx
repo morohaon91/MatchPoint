@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { Game, ParticipantStatus } from "@/lib/types/models";
 import { isDateInPast, formatDate, formatTime } from "@/lib/utils/dateUtils";
@@ -19,9 +19,6 @@ interface GameListProps {
   emptyMessage?: string;
 }
 
-/**
- * GameList component displays a list of games with filtering options
- */
 export default function GameList({
   games = [],
   isLoading = false,
@@ -34,7 +31,6 @@ export default function GameList({
   onLeaveGame,
   emptyMessage = "No games found",
 }: GameListProps) {
-  const [filteredGames, setFilteredGames] = useState<Game[]>(games);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [viewMode, setViewMode] = useState<"listView" | "calendar">("listView");
@@ -42,8 +38,7 @@ export default function GameList({
     "date-asc"
   );
 
-  // Update filtered games when props change or filters change
-  useEffect(() => {
+  const filteredGames = useMemo(() => {
     let result = [...games];
 
     // Apply status filter
@@ -93,7 +88,7 @@ export default function GameList({
       result.sort((a, b) => a.title.localeCompare(b.title));
     }
 
-    setFilteredGames(result);
+    return result;
   }, [games, statusFilter, searchTerm, userParticipantStatus, sortBy]);
 
   // Group games by date for calendar view

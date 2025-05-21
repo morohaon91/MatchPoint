@@ -89,7 +89,7 @@ export default function CreateGamePage() {
           // Permission error
           throw new Error(
             errorData.error ||
-              "You don't have permission to create games in this group. You need to be an admin or organizer.",
+              "You don't have permission to create games in this group. You need to be an admin or organizer."
           );
         } else {
           throw new Error(errorData.error || "Failed to create game");
@@ -102,7 +102,7 @@ export default function CreateGamePage() {
       if (!result.gameId) {
         // If the API doesn't return a gameId, something went wrong
         throw new Error(
-          "Game creation failed: No game ID returned from server",
+          "Game creation failed: No game ID returned from server"
         );
       }
 
@@ -121,7 +121,7 @@ export default function CreateGamePage() {
         if (!verifyResponse.ok) {
           console.warn(
             "Game created but verification failed:",
-            await verifyResponse.text(),
+            await verifyResponse.text()
           );
         } else {
           console.log("Game creation verified successfully");
@@ -139,7 +139,7 @@ export default function CreateGamePage() {
       console.error("Error creating game:", err);
       setError(
         err.message ||
-          "An unexpected error occurred. Please check the console for more details.",
+          "An unexpected error occurred. Please check the console for more details."
       );
     } finally {
       setIsSubmitting(false);

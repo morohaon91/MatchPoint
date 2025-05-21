@@ -10,7 +10,7 @@ export default function Navbar() {
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center">
           <Link
-            href="/"
+            href="/app/dashboard"
             className="flex items-center space-x-2 text-lg font-semibold text-foreground hover:text-primary transition-colors"
           >
             <FontAwesomeIcon icon={faFutbol} className="h-6 w-6 text-primary" />

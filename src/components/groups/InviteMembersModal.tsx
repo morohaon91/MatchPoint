@@ -19,17 +19,41 @@ export default function InviteMembersModal({
   onInviteSent,
 }: InviteMembersModalProps) {
   const [inviteMethod, setInviteMethod] = useState<"email" | "link" | "qr">(
-    "email",
+    "email"
   );
   const [emails, setEmails] = useState<string>("");
   const [message, setMessage] = useState<string>(
-    "Join our group on MatchPoint!",
+    "Join our group on MatchPoint!"
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [inviteLink, setInviteLink] = useState<string>("");
   const [showCopiedMessage, setShowCopiedMessage] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+
+  // Add this useEffect
+  React.useEffect(() => {
+    const checkClipboardPermissions = async () => {
+      if (navigator.permissions) {
+        try {
+          const { state } = await navigator.permissions.query({
+            name: "clipboard-write" as PermissionName,
+          });
+          if (state === "denied") {
+            setError(
+              "Clipboard access is blocked. Please enable permissions in your browser settings."
+            );
+          }
+        } catch (error) {
+          console.warn("Permission check failed:", error);
+        }
+      }
+    };
+
+    if (isOpen) {
+      checkClipboardPermissions();
+    }
+  }, [isOpen]);
 
   // Update message when group data is available
   React.useEffect(() => {
@@ -62,7 +86,7 @@ export default function InviteMembersModal({
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const invalidEmails = emailList.filter(
-      (email) => !emailRegex.test(email.trim()),
+      (email) => !emailRegex.test(email.trim())
     );
 
     if (invalidEmails.length > 0) {
@@ -112,10 +136,51 @@ export default function InviteMembersModal({
     }
   };
 
-  const copyLinkToClipboard = () => {
-    navigator.clipboard.writeText(inviteLink);
-    setShowCopiedMessage(true);
-    setTimeout(() => setShowCopiedMessage(false), 2000);
+  const copyLinkToClipboard = async () => {
+    try {
+      if (!inviteLink) {
+        setError("No invite link available to copy");
+        return;
+      }
+
+      // Add permission check here
+      if (navigator.permissions) {
+        try {
+          const { state } = await navigator.permissions.query({
+            name: "clipboard-write" as PermissionName,
+          });
+
+          if (state !== "granted") {
+            setError(
+              "Please enable clipboard permissions in your browser settings"
+            );
+            return;
+          }
+        } catch (permissionError) {
+          console.warn("Permission query failed:", permissionError);
+        }
+      }
+
+      // Rest of your existing copy logic
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(inviteLink);
+      } else {
+        // Fallback code...
+      }
+
+      setShowCopiedMessage(true);
+      setTimeout(() => setShowCopiedMessage(false), 2000);
+      setError("");
+    } catch (err) {
+      console.error("Copy failed:", err);
+      setError("Failed to copy link. Please manually select and copy it.");
+      setShowCopiedMessage(false);
+
+      const input = document.querySelector(
+        "input[readonly]"
+      ) as HTMLInputElement;
+      input?.select();
+    }
   };
 
   if (!isOpen) return null;
@@ -153,19 +218,31 @@ export default function InviteMembersModal({
           <div className="mb-6">
             <div className="flex border-b border-gray-200">
               <button
-                className={`px-4 py-2 font-medium text-sm ${inviteMethod === "email" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+                className={`px-4 py-2 font-medium text-sm ${
+                  inviteMethod === "email"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
                 onClick={() => setInviteMethod("email")}
               >
                 Email
               </button>
               <button
-                className={`px-4 py-2 font-medium text-sm ${inviteMethod === "link" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+                className={`px-4 py-2 font-medium text-sm ${
+                  inviteMethod === "link"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
                 onClick={() => setInviteMethod("link")}
               >
                 Invite Link
               </button>
               <button
-                className={`px-4 py-2 font-medium text-sm ${inviteMethod === "qr" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+                className={`px-4 py-2 font-medium text-sm ${
+                  inviteMethod === "qr"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
                 onClick={() => setInviteMethod("qr")}
               >
                 QR Code
@@ -325,7 +402,9 @@ export default function InviteMembersModal({
                   </button>
 
                   <a
-                    href={`https://wa.me/?text=${encodeURIComponent(`Join our ${group.sport} group on MatchPoint! ${inviteLink}`)}`}
+                    href={`https://wa.me/?text=${encodeURIComponent(
+                      `Join our ${group.sport} group on MatchPoint! ${inviteLink}`
+                    )}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

@@ -188,6 +188,10 @@ const config: Config = {
           "0%": { transform: "translateY(20px)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
+        "pulse-once": {
+          "0%, 100%": { transform: "scale(1)", opacity: "1" },
+          "50%": { transform: "scale(1.05)", opacity: ".9" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -200,6 +204,7 @@ const config: Config = {
         "slide-in-right": "slide-in-right 0.5s ease-out",
         "slide-in-left": "slide-in-left 0.5s ease-out",
         "slide-in-bottom": "slide-in-bottom 0.5s ease-out",
+        "pulse-once": "pulse-once 0.5s ease-in-out",
       },
     },
   },

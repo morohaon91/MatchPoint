@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import React, { useState, useMemo } from "react";
 import { Game, SportType, GameStatus, Group } from "@/lib/types/models";
 import { Button } from "@/components/ui/Button";
 import {
@@ -22,9 +24,6 @@ interface ModernGameFormProps {
   className?: string;
 }
 
-/**
- * ModernGameForm component for creating and editing games
- */
 export default function ModernGameForm({
   initialData = {},
   onSubmit,
@@ -32,36 +31,42 @@ export default function ModernGameForm({
   isLoading = false,
   className = "",
 }: ModernGameFormProps) {
-  // Get group data if groupId is provided
+  // Memoize group reference to prevent unnecessary re-renders
   const groupId = initialData?.groupId;
-  const groupRef = groupId
-    ? doc(db, "groups", groupId).withConverter(firestoreConverter<Group>())
-    : null;
+  const groupRef = useMemo(() => {
+    return groupId
+      ? doc(db, "groups", groupId).withConverter(firestoreConverter<Group>())
+      : null;
+  }, [groupId]);
+
   const [group, groupLoading] = useDocumentData<Group>(groupRef);
 
-  // Get the initial sport type from the group or initialData or default to TENNIS
-  const initialSport = initialData?.sport || group?.sport || SportType.TENNIS;
+  // Initial sport type calculation
+  const initialSport = useMemo(() => {
+    return initialData?.sport || group?.sport || SportType.TENNIS;
+  }, [initialData?.sport, group?.sport]);
 
-  // Form state - initialize with all values including the sport from group if available
+  // Form state
   const [formData, setFormData] = useState<Partial<Game>>({
     title: "",
     description: "",
     sport: initialSport,
     location: "",
-    scheduledTime: new Date(Date.now() + 86400000).toISOString().slice(0, 16), // Tomorrow
+    scheduledTime: new Date(Date.now() + 86400000).toISOString().slice(0, 16),
     endTime: new Date(Date.now() + 86400000 + 7200000)
       .toISOString()
-      .slice(0, 16), // Tomorrow + 2 hours
+      .slice(0, 16),
     status: GameStatus.UPCOMING,
     maxParticipants: 10,
     minParticipants: 2,
     isRecurring: false,
     isPrivate: false,
-    isOpenToGuests: false, // New field for privacy option
+    isOpenToGuests: false,
     photoURL: "",
     ...initialData,
   });
 
+  
   // Error state
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -69,7 +74,7 @@ export default function ModernGameForm({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));

@@ -397,7 +397,7 @@ export default function GameList({
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h3 className="text-lg font-semibold mb-2">Join Game</h3>
-            <p className="mb-4">Are you sure you want to join "{selectedGame.title}"?</p>
+            <p className="mb-4">Are you sure you want to join &quot;{selectedGame.title}&quot;?</p>
             <div className="flex justify-end space-x-3">
               <button 
                 onClick={handleCancelDialog}

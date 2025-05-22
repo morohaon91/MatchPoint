@@ -148,7 +148,7 @@ const GroupDetailsPage: React.FC = () => {
 
       fetchMemberDetails();
     }
-  }, [group, groupLoading, db]);
+  }, [group, groupLoading]);
 
   // Add effect to fetch participant status for all games
   useEffect(() => {

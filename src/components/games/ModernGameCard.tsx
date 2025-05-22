@@ -17,6 +17,7 @@ import {
   AvatarFallback,
 } from "@/components/ui/Avatar";
 import { Timestamp } from "firebase/firestore";
+import Image from 'next/image';
 
 interface ModernGameCardProps {
   game: Game;
@@ -191,12 +192,13 @@ export default function ModernGameCard({
       {/* Game image */}
       {game.photoURL && (
         <div className="relative w-full h-32 overflow-hidden">
-          <img
+          <Image
             src={game.photoURL}
             alt={game.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             onError={(e) => {
-              (e.target as HTMLImageElement).src =
+              (e.target as any).src =
                 "https://via.placeholder.com/400x200?text=Game+Image";
             }}
           />
@@ -326,7 +328,7 @@ export default function ModernGameCard({
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h3 className="text-lg font-semibold mb-2">Join Game</h3>
-            <p className="mb-4">Are you sure you want to join "{game.title}"?</p>
+            <p className="mb-4">Are you sure you want to join &quot;{game.title}&quot;?</p>
             <div className="flex justify-end space-x-3">
               <Button variant="outline" size="sm" onClick={handleCancelDialog}>
                 Cancel

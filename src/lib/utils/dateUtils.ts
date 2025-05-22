@@ -1,37 +1,59 @@
+import { Timestamp } from "firebase/firestore";
+
 /**
- * Format a date to a human-readable format
- *
- * @param dateInput - The date to format (can be string, Date, or Firestore Timestamp)
- * @returns A formatted date string (e.g., "Monday, January 1, 2023")
+ * Converts various date formats to a JavaScript Date object
+ * @param value - The value to convert (Timestamp, string, Date, or undefined)
+ * @returns A JavaScript Date object, or undefined if the input is invalid/undefined
  */
-export function formatDate(dateInput: any): string {
-  if (!dateInput) return "";
+export function convertToDate(value: Timestamp | Date | string | undefined): Date | undefined {
+  if (!value) return undefined;
+  if (value instanceof Timestamp) return value.toDate();
+  if (value instanceof Date) return value;
+  if (typeof value === "string") return new Date(value);
+  return undefined;
+}
 
-  let date: Date;
-
-  // Handle different date input types
-  if (typeof dateInput === "string") {
-    date = new Date(dateInput);
-  } else if (dateInput instanceof Date) {
-    date = dateInput;
-  } else if (dateInput && typeof dateInput.toDate === "function") {
-    // Handle Firestore Timestamp
-    date = dateInput.toDate();
-  } else {
-    return "";
-  }
-
-  // Check if the date is valid
-  if (isNaN(date.getTime())) {
-    return "";
-  }
-
-  return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
+/**
+ * Formats a date for display using the specified options
+ * @param value - The date value to format
+ * @param options - Intl.DateTimeFormatOptions for formatting
+ * @returns A formatted date string, or undefined if the input is invalid
+ */
+export function formatDate(
+  value: Timestamp | Date | string | undefined,
+  options: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    month: "short",
     day: "numeric",
-  });
+    hour: "numeric",
+    minute: "2-digit",
+  }
+): string | undefined {
+  const date = convertToDate(value);
+  if (!date) return undefined;
+  return date.toLocaleString(undefined, options);
+}
+
+/**
+ * Checks if a date is in the past
+ * @param value - The date value to check
+ * @returns true if the date is in the past, false otherwise
+ */
+export function isDateInPast(value: Timestamp | Date | string | undefined): boolean {
+  const date = convertToDate(value);
+  if (!date) return false;
+  return date < new Date();
+}
+
+/**
+ * Checks if a date is in the future
+ * @param value - The date value to check
+ * @returns true if the date is in the future, false otherwise
+ */
+export function isDateInFuture(value: Timestamp | Date | string | undefined): boolean {
+  const date = convertToDate(value);
+  if (!date) return false;
+  return date > new Date();
 }
 
 /**
@@ -89,35 +111,6 @@ export function formatDateTime(dateString: string, timeString: string): string {
   }
 
   return `${formattedDate} at ${formattedTime}`;
-}
-
-/**
- * Check if a date is in the past
- *
- * @param dateInput - The date to check (can be string, Date, or Firestore Timestamp)
- * @returns True if the date is in the past, false otherwise
- */
-export function isDateInPast(dateInput: string | Date): boolean {
-  if (!dateInput) return false;
-
-  let date: Date;
-
-  // Handle different date input types
-  if (typeof dateInput === "string") {
-    date = new Date(dateInput);
-  } else if (dateInput instanceof Date) {
-    date = dateInput;
-  } else {
-    return false;
-  }
-
-  // Check if the date is valid
-  if (isNaN(date.getTime())) {
-    return false;
-  }
-
-  const now = new Date();
-  return date < now;
 }
 
 /**

@@ -13,6 +13,8 @@ import {
   updateDoc,
   deleteDoc,
   Timestamp,
+  FieldValue,
+  addDoc,
 } from "firebase/firestore";
 import {
   Game,
@@ -34,64 +36,40 @@ export async function getUserUpcomingGames(userId: string): Promise<Game[]> {
   }
 
   try {
-    // First, get all game participants for this user
-    const participantsQuery = query(
-      collection(db, "gameParticipants"),
-      where("userId", "==", userId),
+    // Get games directly where the user is in participantIds
+    const gamesQuery = query(
+      collection(db, "games"),
+      where("participantIds", "array-contains", userId),
+      where("status", "==", GameStatus.UPCOMING),
+      orderBy("scheduledTime", "asc")
     );
 
-    const participantDocs = await getDocs(participantsQuery);
-
-    if (participantDocs.empty) {
+    const gameDocs = await getDocs(gamesQuery);
+    if (gameDocs.empty) {
+      console.log("No games found for user:", userId);
       return [];
     }
 
-    // Extract game IDs from participants
-    const gameIds = participantDocs.docs.map((doc) => {
-      const participant = doc.data() as GameParticipant;
-      return participant.gameId;
+    const games = gameDocs.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        ...data,
+        id: doc.id,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        scheduledTime: data.scheduledTime,
+        endTime: data.endTime,
+        participantIds: data.participantIds || [],
+        waitlistIds: data.waitlistIds || [],
+        isRecurring: data.isRecurring || false,
+        isPrivate: data.isPrivate || false
+      } as Game;
     });
 
-    // Get unique game IDs
-    const uniqueGameIds = Array.from(new Set(gameIds));
+    // Filter out games that are in the past
+    const now = Timestamp.now();
+    return games.filter(game => game.scheduledTime.toMillis() > now.toMillis());
 
-    // Get all games
-    const games: Game[] = [];
-
-    // Fetch games in batches to avoid potential issues with large IN queries
-    const batchSize = 10;
-    for (let i = 0; i < uniqueGameIds.length; i += batchSize) {
-      const batch = uniqueGameIds.slice(i, i + batchSize);
-
-      // For each batch, get games that are upcoming (date is in the future)
-      for (const gameId of batch) {
-        const gameDoc = await getDoc(doc(db, "games", gameId));
-
-        if (gameDoc.exists()) {
-          const game = gameDoc.data() as Game;
-
-          // Check if the game is upcoming
-          const gameDate =
-            game.date instanceof Timestamp
-              ? game.date.toDate()
-              : new Date(game.date);
-          const now = new Date();
-
-          if (gameDate > now || game.status === GameStatus.UPCOMING) {
-            games.push(game);
-          }
-        }
-      }
-    }
-
-    // Sort games by date
-    return games.sort((a, b) => {
-      const dateA =
-        a.date instanceof Timestamp ? a.date.toDate() : new Date(a.date);
-      const dateB =
-        b.date instanceof Timestamp ? b.date.toDate() : new Date(b.date);
-      return dateA.getTime() - dateB.getTime();
-    });
   } catch (error) {
     console.error("Error getting user upcoming games:", error);
     return [];
@@ -106,37 +84,42 @@ export async function getUserUpcomingGames(userId: string): Promise<Game[]> {
  * @returns A promise that resolves to the created game
  */
 export async function createGame(
-  gameData: Omit<
-    Game,
-    "id" | "createdBy" | "createdAt" | "currentParticipants" | "status"
-  >,
-  userId: string,
+  gameData: Omit<Game, "id" | "createdAt" | "updatedAt" | "currentParticipants" | "participantIds" | "waitlistIds" | "status">
 ): Promise<Game> {
   try {
-    // Create a new document reference with auto-generated ID
-    const gameRef = doc(collection(db, "games"));
+    const now = Timestamp.now();
 
-    // Prepare the game data
-    const newGame: Game = {
-      id: gameRef.id,
+    // Create the game document with empty participants
+    const newGameData = {
       ...gameData,
-      createdBy: userId,
-      createdAt: serverTimestamp(),
+      createdAt: now,
+      updatedAt: now,
       currentParticipants: 0,
+      participantIds: [],
+      waitlistIds: [],
       status: GameStatus.UPCOMING,
     };
 
-    // Create the game document
-    await setDoc(gameRef, newGame);
+    // Add the game document
+    const gameRef = await addDoc(collection(db, "games"), newGameData);
+    const newGame = { ...newGameData, id: gameRef.id } as Game;
 
-    return {
-      ...newGame,
-      createdAt: Timestamp.now(), // Replace serverTimestamp with actual Timestamp for return value
-    };
+    return newGame;
   } catch (error) {
     console.error("Error creating game:", error);
-    throw new Error("Failed to create game");
+    throw error;
   }
+}
+
+/**
+ * Helper function to convert Firestore timestamp to Date
+ */
+function convertToDate(timestamp: Timestamp | Date | FieldValue | string | undefined): Date | undefined {
+  if (!timestamp) return undefined;
+  if (timestamp instanceof Date) return timestamp;
+  if (timestamp instanceof Timestamp) return timestamp.toDate();
+  if (typeof timestamp === 'string') return new Date(timestamp);
+  return undefined;
 }
 
 /**
@@ -217,19 +200,42 @@ export async function getGroupGames(groupId: string): Promise<Game[]> {
   }
 
   try {
+    // First get the group to get its name
+    const groupDoc = await getDoc(doc(db, "groups", groupId));
+    const groupName = groupDoc.exists() ? groupDoc.data().name : undefined;
+
     const gamesQuery = query(
       collection(db, "games"),
       where("groupId", "==", groupId),
-      orderBy("date", "asc"),
+      where("status", "==", GameStatus.UPCOMING),
+      orderBy("scheduledTime", "asc"),
     );
 
     const gameDocs = await getDocs(gamesQuery);
-
     if (gameDocs.empty) {
       return [];
     }
 
-    return gameDocs.docs.map((doc) => doc.data() as Game);
+    const games = gameDocs.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        ...data,
+        id: doc.id,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        scheduledTime: data.scheduledTime,
+        endTime: data.endTime,
+        participantIds: data.participantIds || [],
+        waitlistIds: data.waitlistIds || [],
+        isRecurring: data.isRecurring || false,
+        isPrivate: data.isPrivate || false,
+        groupName, // Add the group name to each game
+      } as Game;
+    });
+
+    // Filter out games that are in the past
+    const now = Timestamp.now();
+    return games.filter(game => game.scheduledTime.toMillis() > now.toMillis());
   } catch (error) {
     console.error("Error getting group games:", error);
     return [];
@@ -281,6 +287,8 @@ export async function addGameParticipant(
   gameId: string,
   userId: string,
   status: ParticipantStatus = ParticipantStatus.CONFIRMED,
+  displayName?: string,
+  photoURL?: string
 ): Promise<GameParticipant> {
   try {
     // Check if the user is already a participant
@@ -292,38 +300,62 @@ export async function addGameParticipant(
       throw new Error("User is already a participant in this game");
     }
 
-    // Create the game participant
+    const now = Timestamp.now();
+
+    // Create the game participant in both locations
     const gameParticipant: GameParticipant = {
       id: `${gameId}_${userId}`,
       gameId,
       userId,
       status,
+      joinedAt: now,
+      registeredAt: now,
+      role: 'player',
       isGuest: false,
-      registeredAt: serverTimestamp(),
+      displayName,
+      photoURL
     };
 
+    // 1. Add to gameParticipants collection for global queries
     await setDoc(
       doc(db, "gameParticipants", gameParticipant.id),
       gameParticipant,
     );
 
-    // Update the participant count in the game
-    const gameDoc = await getDoc(doc(db, "games", gameId));
+    // 2. Add to game's participants subcollection
+    await setDoc(
+      doc(collection(db, "games", gameId, "participants"), userId),
+      {
+        userId,
+        status,
+        joinedAt: now,
+        registeredAt: now,
+        role: 'player',
+        isGuest: false,
+        displayName,
+        photoURL
+      } as GameParticipant
+    );
 
+    // 3. Update the game document
+    const gameDoc = await getDoc(doc(db, "games", gameId));
     if (gameDoc.exists()) {
       const game = gameDoc.data() as Game;
+      const updates: Partial<Game> = {};
 
       if (status === ParticipantStatus.CONFIRMED) {
-        await updateDoc(doc(db, "games", gameId), {
-          currentParticipants: (game.currentParticipants || 0) + 1,
-        });
+        updates.currentParticipants = (game.currentParticipants || 0) + 1;
+        updates.participantIds = [...(game.participantIds || []), userId];
+      } else if (status === ParticipantStatus.WAITLIST) {
+        updates.waitlistIds = [...(game.waitlistIds || []), userId];
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await updateDoc(doc(db, "games", gameId), updates);
       }
     }
 
-    return {
-      ...gameParticipant,
-      registeredAt: Timestamp.now(), // Replace serverTimestamp with actual Timestamp for return value
-    };
+    return gameParticipant;
   } catch (error) {
     console.error("Error adding game participant:", error);
     throw new Error("Failed to add game participant");

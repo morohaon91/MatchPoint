@@ -13,8 +13,10 @@ import {
 } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { intervalToDuration, Duration } from "date-fns"; // Removed unused imports, added Duration
+import { intervalToDuration, Duration } from "date-fns";
 import { getSportIcon } from "../SmartDashboard";
+import { Timestamp } from "firebase/firestore";
+import { convertToDate, formatDate, isDateInFuture } from "@/lib/utils/dateUtils";
 
 interface NextGameWidgetProps {
   games: Game[]; // All games user is part of, sorted by scheduledTime ascending
@@ -38,19 +40,35 @@ export default function NextGameWidget({
   const [countdown, setCountdown] = useState<string>("");
 
   useEffect(() => {
+    console.log("NextGameWidget received games:", games);
+    
     const upcomingGames = games
-      .filter(
-        (game) =>
-          game.status === GameStatus.UPCOMING &&
-          new Date(game.scheduledTime) > new Date(),
-      )
-      .sort(
-        (a, b) =>
-          new Date(a.scheduledTime).getTime() -
-          new Date(b.scheduledTime).getTime(),
-      );
+      .filter((game) => {
+        if (!game.scheduledTime) {
+          console.log("Game missing scheduledTime:", game);
+          return false;
+        }
+        const isUpcoming = game.status === GameStatus.UPCOMING && isDateInFuture(game.scheduledTime);
+        if (!isUpcoming) {
+          console.log("Game not upcoming:", {
+            id: game.id,
+            status: game.status,
+            scheduledTime: game.scheduledTime,
+            isFuture: isDateInFuture(game.scheduledTime)
+          });
+        }
+        return isUpcoming;
+      })
+      .sort((a, b) => {
+        const dateA = convertToDate(a.scheduledTime);
+        const dateB = convertToDate(b.scheduledTime);
+        return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
+      });
+
+    console.log("Filtered upcoming games:", upcomingGames);
 
     const newCandidateGame = upcomingGames.length > 0 ? upcomingGames[0] : null;
+    console.log("New candidate game:", newCandidateGame);
 
     setNextGame((currentGame) => {
       // If the new candidate is null and current is also null, no change.
@@ -61,16 +79,15 @@ export default function NextGameWidget({
       if (newCandidateGame.id !== currentGame.id) return newCandidateGame;
       // If IDs are the same, we can also check if other critical data like scheduledTime changed.
       // This handles cases where the same game object might be updated.
-      if (
-        new Date(newCandidateGame.scheduledTime).getTime() !==
-        new Date(currentGame.scheduledTime).getTime()
-      ) {
+      const newTime = convertToDate(newCandidateGame.scheduledTime)?.getTime();
+      const currentTime = convertToDate(currentGame.scheduledTime)?.getTime();
+      if (newTime !== currentTime) {
         return newCandidateGame;
       }
       // Otherwise, no change needed, return the existing state to prevent re-render loop.
       return currentGame;
     });
-  }, [games]); // Only depend on the 'games' prop.
+  }, [games]);
 
   useEffect(() => {
     if (!nextGame) {
@@ -80,7 +97,11 @@ export default function NextGameWidget({
 
     const calculateCountdown = () => {
       const now = new Date();
-      const gameTime = new Date(nextGame.scheduledTime);
+      const gameTime = convertToDate(nextGame.scheduledTime);
+      if (!gameTime) {
+        setCountdown("Invalid date");
+        return;
+      }
       if (now >= gameTime) {
         setCountdown("Starting now!");
         return;
@@ -195,7 +216,7 @@ export default function NextGameWidget({
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              strokeWidth={1.5} // Thinner stroke
+              strokeWidth={1.5}
             >
               <path
                 strokeLinecap="round"
@@ -206,13 +227,7 @@ export default function NextGameWidget({
             <div>
               <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mb-0.5">Date & Time</div>
               <div className="font-semibold text-neutral-700 dark:text-neutral-200">
-                {new Date(nextGame.scheduledTime).toLocaleString([], {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "2-digit",
-                })}
+                {formatDate(nextGame.scheduledTime)}
               </div>
             </div>
           </div>

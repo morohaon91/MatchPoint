@@ -13,6 +13,7 @@ import {
   updateDoc,
   deleteDoc,
   Timestamp,
+  addDoc,
 } from "firebase/firestore";
 import {
   Game,
@@ -102,40 +103,33 @@ export async function getUserUpcomingGames(userId: string): Promise<Game[]> {
  * Create a new game
  *
  * @param gameData - The game data to create
- * @param userId - The ID of the user creating the game
  * @returns A promise that resolves to the created game
  */
 export async function createGame(
-  gameData: Omit<
-    Game,
-    "id" | "createdBy" | "createdAt" | "currentParticipants" | "status"
-  >,
-  userId: string,
+  gameData: Omit<Game, "id" | "createdAt" | "updatedAt" | "currentParticipants" | "participantIds" | "waitlistIds" | "status">
 ): Promise<Game> {
   try {
-    // Create a new document reference with auto-generated ID
-    const gameRef = doc(collection(db, "games"));
+    const now = Timestamp.now();
 
-    // Prepare the game data
-    const newGame: Game = {
-      id: gameRef.id,
+    // Create the game document with empty participants
+    const newGameData = {
       ...gameData,
-      createdBy: userId,
-      createdAt: serverTimestamp(),
+      createdAt: now,
+      updatedAt: now,
       currentParticipants: 0,
+      participantIds: [],
+      waitlistIds: [],
       status: GameStatus.UPCOMING,
     };
 
-    // Create the game document
-    await setDoc(gameRef, newGame);
+    // Add the game document
+    const gameRef = await addDoc(collection(db, "games"), newGameData);
+    const newGame = { ...newGameData, id: gameRef.id } as Game;
 
-    return {
-      ...newGame,
-      createdAt: Timestamp.now(), // Replace serverTimestamp with actual Timestamp for return value
-    };
+    return newGame;
   } catch (error) {
     console.error("Error creating game:", error);
-    throw new Error("Failed to create game");
+    throw error;
   }
 }
 

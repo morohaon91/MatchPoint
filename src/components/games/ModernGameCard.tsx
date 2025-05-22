@@ -123,7 +123,7 @@ export default function ModernGameCard({
           sportType={game.sport}
           onClick={() => onRegister && onRegister(game.id)}
         >
-          Register ({spotsLeft} spots left)
+          Add Me to Game
         </Button>
       );
     }
@@ -134,7 +134,7 @@ export default function ModernGameCard({
         size="sm"
         onClick={() => onRegister && onRegister(game.id)}
       >
-        Join Waitlist {waitlistCount ? `(${waitlistCount})` : ""}
+        Add Me to Game
       </Button>
     );
   };

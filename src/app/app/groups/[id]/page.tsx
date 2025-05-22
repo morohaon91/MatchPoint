@@ -8,7 +8,7 @@ import React, {
   CSSProperties,
 } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Group, GroupMember, Game } from "@/lib/types/models";
+import { Group, GroupMember, Game, User, ParticipantStatus } from "@/lib/types/models";
 import MembersList from "@/components/groups/MembersList";
 import GameList from "@/components/games/GameList";
 import ModernGameForm from "@/components/games/ModernGameForm";
@@ -24,6 +24,7 @@ import {
   where,
   orderBy,
   Timestamp,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebaseClient";
 import { firestoreConverter } from "@/lib/firebase/converters";
@@ -43,20 +44,16 @@ const GroupDetailsPage: React.FC = () => {
     () => doc(db, "groups", groupId).withConverter(firestoreConverter<Group>()),
     [groupId]
   );
-  const membersRef = useMemo(
-    () =>
-      collection(db, "groups", groupId, "members").withConverter(
-        firestoreConverter<GroupMember>()
-      ),
-    [groupId]
-  );
   const gamesCollectionRef = useMemo(() => collection(db, "games"), []);
   const nowTimestamp = useMemo(() => Timestamp.now(), []);
 
   // Firestore Data Hooks
   const [group, groupLoading, groupError] = useDocumentData<Group>(groupRef);
-  const [rawMembers, membersLoading, membersError] =
-    useCollectionData<GroupMember>(membersRef);
+  
+  // State for member data and loading
+  const [rawMembers, setRawMembers] = useState<GroupMember[]>([]);
+  const [membersLoading, setMembersLoading] = useState(true);
+  const [membersError, setMembersError] = useState<Error | null>(null);
   const upcomingGamesQuery = useMemo(
     () =>
       query(
@@ -82,8 +79,114 @@ const GroupDetailsPage: React.FC = () => {
   const [pastGames, pastGamesLoading, pastGamesError] =
     useCollectionData<Game>(pastGamesQuery);
 
+  // State for user participation status
+  const [userParticipantStatus, setUserParticipantStatus] = useState<Record<string, ParticipantStatus>>({});
+
+  // Fetch member details whenever group changes
+  useEffect(() => {
+    if (group && !groupLoading) {
+      setMembersLoading(true);
+      const fetchMemberDetails = async () => {
+        try {
+          if (!group.memberIds || group.memberIds.length === 0) {
+            setRawMembers([]);
+            setMembersLoading(false);
+            return;
+          }
+
+          // Create GroupMember objects with user details
+          const memberPromises = group.memberIds.map(async (userId) => {
+            try {
+              const userRef = doc(db, "users", userId);
+              const userSnap = await getDoc(userRef);
+              
+              // Create the GroupMember object
+              const member: GroupMember = {
+                userId,
+                // Assign role based on whether the user is in adminIds
+                role: group.adminIds?.includes(userId) ? "admin" : "member",
+                user: {}
+              };
+
+              // If user document exists, add user details
+              if (userSnap.exists()) {
+                const userData = userSnap.data();
+                member.user = {
+                  name: userData.displayName || userData.name || "Unknown User",
+                  email: userData.email || "",
+                  photoURL: userData.photoURL || undefined
+                };
+              } else {
+                member.user = {
+                  name: "Unknown User",
+                  email: "",
+                  photoURL: undefined
+                };
+              }
+
+              return member;
+            } catch (err) {
+              console.error(`Error fetching user ${userId} details:`, err);
+              // Return a minimal member object if there's an error
+              return {
+                userId,
+                role: group.adminIds?.includes(userId) ? "admin" : "member",
+                user: { name: "Unknown User", email: "", photoURL: undefined }
+              };
+            }
+          });
+
+          const members = await Promise.all(memberPromises);
+          setRawMembers(members);
+        } catch (err) {
+          console.error("Error fetching member details:", err);
+          setMembersError(err instanceof Error ? err : new Error("Unknown error fetching members"));
+        } finally {
+          setMembersLoading(false);
+        }
+      };
+
+      fetchMemberDetails();
+    }
+  }, [group, groupLoading, db]);
+
+  // Add effect to fetch participant status for all games
+  useEffect(() => {
+    const fetchParticipantStatus = async () => {
+      if (!currentUser || !upcomingGames?.length) return;
+
+      try {
+        const statuses: Record<string, ParticipantStatus> = {};
+        
+        for (const game of upcomingGames) {
+          const response = await fetch(`/api/games/${game.id}/participants`, {
+            headers: {
+              'Authorization': `Bearer ${await currentUser.getIdToken()}`
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const userParticipant = data.participants.find(
+              (p: any) => p.userId === currentUser.uid
+            );
+            if (userParticipant) {
+              statuses[game.id] = userParticipant.status;
+            }
+          }
+        }
+
+        setUserParticipantStatus(statuses);
+      } catch (error) {
+        console.error('Error fetching participant status:', error);
+      }
+    };
+
+    fetchParticipantStatus();
+  }, [currentUser, upcomingGames]);
+
   // Memoized Values
-  const members = useMemo(() => rawMembers ?? [], [rawMembers]);
+  const members = useMemo(() => rawMembers, [rawMembers]);
   const canManage = useMemo(
     () =>
       currentUser &&
@@ -187,7 +290,7 @@ const GroupDetailsPage: React.FC = () => {
   }
 
   if (overallError || !group) {
-    const errorMessage = overallError instanceof Error ? overallError.message : 'Group not found or an error occurred.';
+    const errorMessage = 'Group not found or an error occurred.';
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -394,6 +497,7 @@ const GroupDetailsPage: React.FC = () => {
                 isAdmin={canManage ?? false}
                 onJoinGame={handleJoinGame}
                 onLeaveGame={handleLeaveGame}
+                userParticipantStatus={userParticipantStatus}
               />
             </div>
             <div>
@@ -407,6 +511,7 @@ const GroupDetailsPage: React.FC = () => {
                 isAdmin={canManage ?? false}
                 onJoinGame={handleJoinGame}
                 onLeaveGame={handleLeaveGame}
+                userParticipantStatus={userParticipantStatus}
               />
             </div>
           </div>
@@ -420,7 +525,7 @@ const GroupDetailsPage: React.FC = () => {
             {membersLoading && <p>Loading members...</p>}
             {membersError && (
               <p className="text-red-500">
-                Error loading members: {membersError.message}
+                Error loading members
               </p>
             )}
             {members.length > 0 && group && (

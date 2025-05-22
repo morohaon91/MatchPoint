@@ -37,6 +37,8 @@ export default function GameList({
   const [sortBy, setSortBy] = useState<"date-asc" | "date-desc" | "title">(
     "date-asc"
   );
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
   const filteredGames = useMemo(() => {
     let result = [...games];
@@ -71,18 +73,22 @@ export default function GameList({
       );
     }
 
-    // Apply sorting
+    // Apply sorting - using a helper to convert timestamps safely
+    const getTimestamp = (scheduledTime: any): number => {
+      try {
+        return new Date(scheduledTime).getTime();
+      } catch (e) {
+        return 0;
+      }
+    };
+
     if (sortBy === "date-asc") {
       result.sort(
-        (a, b) =>
-          new Date(a.scheduledTime).getTime() -
-          new Date(b.scheduledTime).getTime()
+        (a, b) => getTimestamp(a.scheduledTime) - getTimestamp(b.scheduledTime)
       );
     } else if (sortBy === "date-desc") {
       result.sort(
-        (a, b) =>
-          new Date(b.scheduledTime).getTime() -
-          new Date(a.scheduledTime).getTime()
+        (a, b) => getTimestamp(b.scheduledTime) - getTimestamp(a.scheduledTime)
       );
     } else if (sortBy === "title") {
       result.sort((a, b) => a.title.localeCompare(b.title));
@@ -92,16 +98,42 @@ export default function GameList({
   }, [games, statusFilter, searchTerm, userParticipantStatus, sortBy]);
 
   // Group games by date for calendar view
-  const gamesByDate: Record<string, Game[]> = {};
-  if (viewMode === "calendar") {
-    filteredGames.forEach((game) => {
-      const dateKey = formatDate(game.scheduledTime);
-      if (!gamesByDate[dateKey]) {
-        gamesByDate[dateKey] = [];
-      }
-      gamesByDate[dateKey].push(game);
-    });
-  }
+  const gamesByDate = useMemo(() => {
+    const result: Record<string, Game[]> = {};
+    if (viewMode === "calendar") {
+      filteredGames.forEach((game) => {
+        const dateKey = formatDate(game.scheduledTime);
+        if (dateKey) {
+          if (!result[dateKey]) {
+            result[dateKey] = [];
+          }
+          result[dateKey].push(game);
+        }
+      });
+    }
+    return result;
+  }, [filteredGames, viewMode]);
+
+  // These functions from lib/utils/dateUtils handle the timestamp
+  // Already imported at the top of the file
+
+  const handleJoinGameClick = (game: Game) => {
+    setSelectedGame(game);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmJoin = () => {
+    if (selectedGame && onJoinGame) {
+      onJoinGame(selectedGame);
+    }
+    setShowConfirmDialog(false);
+    setSelectedGame(null);
+  };
+
+  const handleCancelDialog = () => {
+    setShowConfirmDialog(false);
+    setSelectedGame(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -251,7 +283,8 @@ export default function GameList({
               onUnregister={onLeaveGame ? () => onLeaveGame(game) : undefined}
               key={game.id}
               game={game}
-              waitlistCount={game.waitlistIds.length}
+              waitlistCount={game.waitlistIds?.length ?? 0}
+              spotsLeft={game.maxParticipants ? game.maxParticipants - (game.currentParticipants || 0) : undefined}
             />
           ))}
         </div>
@@ -343,7 +376,7 @@ export default function GameList({
                             !userParticipantStatus[game.id] &&
                             onJoinGame && (
                               <button
-                                onClick={() => onJoinGame(game)}
+                                onClick={() => handleJoinGameClick(game)}
                                 className="inline-flex items-center px-3 py-1 rounded-md bg-blue-100 text-blue-800 hover:bg-blue-200 text-sm font-medium"
                               >
                                 Add Me to Game
@@ -355,6 +388,30 @@ export default function GameList({
                   </div>
                 </div>
               ))}
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && selectedGame && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-2">Join Game</h3>
+            <p className="mb-4">Are you sure you want to join "{selectedGame.title}"?</p>
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={handleCancelDialog}
+                className="px-3 py-1 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 text-sm font-medium"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleConfirmJoin}
+                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       )}

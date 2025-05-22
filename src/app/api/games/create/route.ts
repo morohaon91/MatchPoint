@@ -12,6 +12,7 @@ import {
   RecurringSeries,
 } from "../../../../lib/types/models";
 import { getCurrentUser } from "../../../../lib/auth/get-current-user"; // Assuming this path is correct or will be created
+import { canManageGames } from "@/lib/services";
 
 const admin = initializeAdmin();
 const db = getFirestore(admin.app()); // Get Firestore instance from the initialized admin app
@@ -21,7 +22,8 @@ function parseDateTime(dateStr: string, timeStr: string): Timestamp {
   const [year, month, day] = dateStr.split("-").map(Number);
   const [hours, minutes] = timeStr.split(":").map(Number);
   // Month is 0-indexed in JavaScript Date
-  return Timestamp.fromDate(new Date(year, month - 1, day, hours, minutes));
+  const date = new Date(year, month - 1, day, hours, minutes);
+  return Timestamp.fromDate(date);
 }
 
 function parseDate(dateStr: string): Timestamp {
@@ -31,123 +33,77 @@ function parseDate(dateStr: string): Timestamp {
 
 export async function POST(request: NextRequest) {
   try {
-    const currentUser = await getCurrentUser(request);
-    if (!currentUser) {
+    // Get the authorization token from the request
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get the body first to extract groupId for permission check
-    const body = await request.json();
-    const { groupId } = body;
+    const token = authHeader.split("Bearer ")[1];
 
-    if (!groupId) {
-      return NextResponse.json({ error: "Missing groupId" }, { status: 400 });
-    }
+    // Verify the token and get the user ID
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const currentUser = decodedToken;
 
-    // Check if user has permission to create games in this group
-    try {
-      const groupMemberRef = db
-        .collection("groups")
-        .doc(groupId)
-        .collection("members")
-        .doc(currentUser.uid);
-      const memberDoc = await groupMemberRef.get();
-
-      if (!memberDoc.exists) {
-        return NextResponse.json(
-          { error: "You are not a member of this group" },
-          { status: 403 },
-        );
-      }
-
-      const memberData = memberDoc.data();
-      if (
-        !memberData ||
-        (memberData.role !== "admin" && memberData.role !== "organizer")
-      ) {
-        return NextResponse.json(
-          {
-            error:
-              "You must be an admin or organizer of this group to create games",
-            details: "Your current role does not have sufficient permissions",
-          },
-          { status: 403 },
-        );
-      }
-    } catch (error) {
-      console.error("Error checking permissions:", error);
-      return NextResponse.json(
-        {
-          error: "Failed to verify permissions",
-          details:
-            "Could not check if you have permission to create games in this group",
-        },
-        { status: 500 },
-      );
-    }
-
-    // Continue with the rest of the request data
+    // Parse the request body
     const {
+      groupId,
       title,
       description,
-      scheduledTime, // ISO string from datetime-local input
-      endTime, // ISO string from datetime-local input
+      scheduledTime,
+      endTime,
       location,
-      maxParticipants = 0, // Default to 0 if not provided, meaning unlimited
-      minParticipants = 2, // Default minimum
+      maxParticipants,
+      minParticipants,
+      sport,
       isRecurring,
       isPrivate,
       isOpenToGuests,
-      sport,
-      recurringDetails, // Contains frequency, dayOfWeek, startDate, endDate/occurrences
-    } = body;
+      recurringDetails,
+    } = await request.json();
 
-    // Basic Validation
-    if (!title || !scheduledTime || !location || !groupId) {
+    // Check if the user can manage games for this group
+    const canManage = await canManageGames(currentUser.uid, groupId);
+
+    if (!canManage) {
       return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
+        { error: "You do not have permission to create games in this group" },
+        { status: 403 }
       );
     }
 
-    // const db is now defined above
-    const batch: WriteBatch = db.batch(); // Use db.batch() and type WriteBatch
-
-    // Create game in the top-level games collection to match security rules
-    const gamesCollectionRef = db.collection("games");
-    const newGameRef = gamesCollectionRef.doc(); // Auto-generate ID for the game on the collection reference
-
-    // Parse the scheduledTime from ISO string to Date
-    const scheduledDate = new Date(scheduledTime);
+    // Parse the scheduledTime from ISO string to Timestamp
+    const scheduledDate = parseDateTime(scheduledTime, "00:00");
 
     const newGameData: Partial<Game> = {
       groupId,
       title,
       description: description || "",
-      scheduledTime: scheduledDate, // Use the parsed date directly
+      scheduledTime: scheduledDate,
       location,
       maxParticipants: Number(maxParticipants) || 0,
       minParticipants: Number(minParticipants) || 2,
-      participantIds: [], // Initialize empty array
-      waitlistIds: [], // Initialize empty array
+      participantIds: [],
+      waitlistIds: [],
       status: GameStatus.UPCOMING,
-      sport: sport, // Use the sport from the form
+      sport: sport,
       isRecurring: !!isRecurring,
       isPrivate: !!isPrivate,
       isOpenToGuests: !!isOpenToGuests,
       createdBy: currentUser.uid,
-      hostId: currentUser.uid, // Set host to creator
-      hostName: "Game Host", // Default host name
-      createdAt: new Date(), // Current date
-      updatedAt: new Date(), // Current date
+      hostId: currentUser.uid,
+      hostName: "Game Host",
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+      currentParticipants: 0,
     };
 
     if (endTime) {
-      const endDate = new Date(endTime);
-      if (endDate <= scheduledDate) {
+      const endDate = parseDateTime(endTime, "00:00");
+      if (endDate.toMillis() <= scheduledDate.toMillis()) {
         return NextResponse.json(
           { error: "End time must be after start time" },
-          { status: 400 },
+          { status: 400 }
         );
       }
       // Add endTime to game data
@@ -195,7 +151,7 @@ export async function POST(request: NextRequest) {
       recurringSeriesId = newSeriesRef.id;
 
       // Use the scheduledTime from the form for the series start
-      const seriesStartDate = new Date(scheduledTime);
+      const seriesStartDate = parseDateTime(scheduledTime, "00:00");
 
       const newSeriesData: Partial<RecurringSeries> = {
         groupId,
@@ -208,8 +164,8 @@ export async function POST(request: NextRequest) {
             : undefined,
         createdBy: currentUser.uid,
         hostId: currentUser.uid,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
         gameIds: [],
         isActive: true,
         duration: 120, // Default 2 hours in minutes
@@ -217,8 +173,8 @@ export async function POST(request: NextRequest) {
 
       if (recurringDetails.endDate) {
         try {
-          const endDate = new Date(recurringDetails.endDate);
-          if (endDate < seriesStartDate) {
+          const endDate = parseDateTime(recurringDetails.endDate, "00:00");
+          if (endDate.toMillis() < seriesStartDate.toMillis()) {
             return NextResponse.json(
               {
                 error:
@@ -236,9 +192,20 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      batch.set(newSeriesRef, newSeriesData);
+      db.runTransaction(async (transaction) => {
+        transaction.set(newSeriesRef, newSeriesData);
+        transaction.set(newSeriesRef.collection("gameIds").doc(newSeriesRef.id), {
+          gameIds: FieldValue.arrayUnion(newSeriesRef.id),
+        });
+      });
       newGameData.recurringSeriesId = recurringSeriesId;
     }
+
+    const batch: WriteBatch = db.batch(); // Use db.batch() and type WriteBatch
+
+    // Create game in the top-level games collection to match security rules
+    const gamesCollectionRef = db.collection("games");
+    const newGameRef = gamesCollectionRef.doc(); // Auto-generate ID for the game on the collection reference
 
     batch.set(newGameRef, newGameData);
 

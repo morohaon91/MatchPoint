@@ -401,23 +401,60 @@ export async function getGroupMembers(groupId: string): Promise<GroupMember[]> {
     return [];
   }
   try {
-    const membersRef = collection(db, "groups", groupId, "members");
-    const querySnapshot = await getDocs(membersRef);
-    const members: GroupMember[] = [];
-    querySnapshot.forEach((doc) => {
-      // Assuming the member document directly matches GroupMember structure
-      // If it contains denormalized user info, adjust the mapping accordingly
-      const memberData = doc.data();
-      members.push({
-        userId: doc.id, // The document ID is the userId
-        role: memberData.role || UserRole.USER, // Default to USER if role is missing
-        // joinedAt: memberData.joinedAt ? (memberData.joinedAt as Timestamp).toDate() : new Date(), // Example if joinedAt is stored
-        // user: { // Example if denormalizing basic user info
-        //   name: memberData.displayName || 'Unknown User',
-        //   photoURL: memberData.photoURL || undefined,
-        // }
-      } as GroupMember); // Cast to GroupMember, ensure all required fields are met
+    // First get the group document to get the list of member IDs and admin IDs
+    const groupRef = doc(db, "groups", groupId);
+    const groupSnap = await getDoc(groupRef);
+    if (!groupSnap.exists()) {
+      console.log(`No group found with ID: ${groupId}`);
+      return [];
+    }
+    const groupData = groupSnap.data();
+    const memberIds = groupData.memberIds || [];
+    const adminIds = groupData.adminIds || [];
+    // No members in the group
+    if (memberIds.length === 0) {
+      return [];
+    }
+    // Fetch user data for each member ID
+    const memberPromises = memberIds.map(async (userId) => {
+      try {
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+                
+        // Create the GroupMember object
+        const member: GroupMember = {
+          userId,
+          // Assign role based on whether the user is in adminIds
+          role: adminIds.includes(userId) ? "admin" : "member",
+          user: {}
+        };
+        // If user document exists, add user details
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          member.user = {
+            name: userData.displayName || userData.name || "Unknown User",
+            email: userData.email || "",
+            photoURL: userData.photoURL || undefined
+          };
+        } else {
+          member.user = {
+            name: "Unknown User",
+            email: "",
+            photoURL: undefined
+          };
+        }
+        return member;
+      } catch (error) {
+        console.error(`Error fetching user ${userId} details:`, error);
+        // Return a minimal member object if there's an error
+        return {
+          userId,
+          role: adminIds.includes(userId) ? "admin" : "member",
+          user: { name: "Unknown User", email: "", photoURL: undefined }
+        };
+      }
     });
+    const members = await Promise.all(memberPromises);
     return members;
   } catch (error) {
     console.error(`Error fetching members for group ${groupId}:`, error);

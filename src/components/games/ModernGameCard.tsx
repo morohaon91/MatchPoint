@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Game, GameStatus, SportType } from "@/lib/types/models";
 import {
@@ -44,6 +44,8 @@ export default function ModernGameCard({
   participantAvatars = [],
   className = "",
 }: ModernGameCardProps) {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
   // Format date for display
   const formatGameDate = (timestamp: Timestamp | Date | string): string => {
     try {
@@ -99,6 +101,21 @@ export default function ModernGameCard({
     }
   };
 
+  const handleRegisterClick = () => {
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmRegister = () => {
+    if (onRegister) {
+      onRegister(game.id);
+    }
+    setShowConfirmDialog(false);
+  };
+
+  const handleCancelDialog = () => {
+    setShowConfirmDialog(false);
+  };
+
   // Get registration status component
   const getRegistrationStatus = () => {
     if (
@@ -146,7 +163,7 @@ export default function ModernGameCard({
           variant="primary"
           size="sm"
           sportType={game.sport}
-          onClick={() => onRegister && onRegister(game.id)}
+          onClick={handleRegisterClick}
         >
           Add Me to Game
         </Button>
@@ -157,7 +174,7 @@ export default function ModernGameCard({
       <Button
         variant="outline"
         size="sm"
-        onClick={() => onRegister && onRegister(game.id)}
+        onClick={handleRegisterClick}
       >
         Add Me to Game
       </Button>
@@ -303,6 +320,24 @@ export default function ModernGameCard({
           {getRegistrationStatus()}
         </div>
       </CardFooter>
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-2">Join Game</h3>
+            <p className="mb-4">Are you sure you want to join "{game.title}"?</p>
+            <div className="flex justify-end space-x-3">
+              <Button variant="outline" size="sm" onClick={handleCancelDialog}>
+                Cancel
+              </Button>
+              <Button variant="primary" size="sm" sportType={game.sport} onClick={handleConfirmRegister}>
+                Confirm
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

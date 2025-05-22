@@ -1,6 +1,6 @@
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebaseClient";
-import { GroupMember } from "@/lib/types/models";
+import { GroupMember, Group } from "@/lib/types/models";
 
 /**
  * Check if a user can manage a group
@@ -11,16 +11,16 @@ import { GroupMember } from "@/lib/types/models";
  */
 export async function canManageGroup(userId: string, groupId: string): Promise<boolean> {
   try {
-    const membershipDoc = await getDoc(doc(db, "groupMembers", `${groupId}_${userId}`));
+    const groupDoc = await getDoc(doc(db, "groups", groupId));
     
-    if (!membershipDoc.exists()) {
+    if (!groupDoc.exists()) {
       return false;
     }
     
-    const membership = membershipDoc.data() as GroupMember;
+    const group = groupDoc.data() as Group;
     
-    // Admin and organizer roles can manage the group
-    return membership.role === 'admin' || membership.role === 'organizer';
+    // Check if user is in adminIds array
+    return group.adminIds?.includes(userId) || false;
   } catch (error) {
     console.error("Error checking group management permission:", error);
     return false;
@@ -48,8 +48,16 @@ export async function canManageGames(userId: string, groupId: string): Promise<b
  */
 export async function isGroupMember(userId: string, groupId: string): Promise<boolean> {
   try {
-    const membershipDoc = await getDoc(doc(db, "groupMembers", `${groupId}_${userId}`));
-    return membershipDoc.exists();
+    const groupDoc = await getDoc(doc(db, "groups", groupId));
+    
+    if (!groupDoc.exists()) {
+      return false;
+    }
+    
+    const group = groupDoc.data() as Group;
+    
+    // Check if user is in memberIds array
+    return group.memberIds?.includes(userId) || false;
   } catch (error) {
     console.error("Error checking group membership:", error);
     return false;

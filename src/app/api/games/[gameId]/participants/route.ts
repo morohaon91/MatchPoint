@@ -136,6 +136,25 @@ export async function POST(
     const decodedToken = await admin.auth().verifyIdToken(token);
     const userId = decodedToken.uid;
     
+    // Get the game to check permissions
+    const game = await getGame(gameId);
+    
+    if (!game) {
+      return NextResponse.json({ error: "Game not found" }, { status: 404 });
+    }
+    
+    // Check if the user is a member of the group
+    if (game.groupId) {
+      const isMember = await isGroupMember(userId, game.groupId);
+      
+      if (!isMember && !game.isOpenToGuests) {
+        return NextResponse.json(
+          { error: "You must be a member of the group to join this game" },
+          { status: 403 }
+        );
+      }
+    }
+    
     // Use a transaction to safely update the game participants
     await runTransaction(db, async (transaction) => {
       const gameRef = doc(db, "games", gameId);
@@ -152,6 +171,7 @@ export async function POST(
 
       const participantIds = gameData.participantIds || [];
       const maxParticipants = gameData.maxParticipants || 0;
+      const currentParticipants = gameData.currentParticipants || 0;
       
       // Check if user is already a participant
       if (participantIds.includes(userId)) {
@@ -159,14 +179,22 @@ export async function POST(
       }
       
       // Check if game is full
-      if (participantIds.length >= maxParticipants) {
-        throw new Error("Game is full");
+      if (maxParticipants > 0 && currentParticipants >= maxParticipants) {
+        // Add user to waitlist
+        const waitlistIds = gameData.waitlistIds || [];
+        if (!waitlistIds.includes(userId)) {
+          transaction.update(gameRef, {
+            waitlistIds: [...waitlistIds, userId],
+            updatedAt: new Date()
+          });
+        }
+        throw new Error("Game is full. You have been added to the waitlist.");
       }
       
       // Add user to participants and increment count
       transaction.update(gameRef, {
         participantIds: [...participantIds, userId],
-        currentParticipants: (participantIds.length + 1),
+        currentParticipants: currentParticipants + 1,
         updatedAt: new Date()
       });
     });

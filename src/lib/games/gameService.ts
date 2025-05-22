@@ -141,7 +141,20 @@ export async function getGame(gameId: string): Promise<Game | null> {
       return null;
     }
 
-    return gameDoc.data() as Game;
+    const data = gameDoc.data();
+    return {
+      ...data,
+      id: gameDoc.id,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      scheduledTime: data.scheduledTime,
+      endTime: data.endTime,
+      participantIds: data.participantIds || [],
+      waitlistIds: data.waitlistIds || [],
+      isRecurring: data.isRecurring || false,
+      isPrivate: data.isPrivate || false,
+      currentParticipants: data.currentParticipants || 0
+    } as Game;
   } catch (error) {
     console.error("Error getting game:", error);
     return null;

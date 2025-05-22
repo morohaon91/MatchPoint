@@ -11,9 +11,7 @@ const withMDX = createMDX({
 
 const nextConfig = {
   images: {
-    remotePatterns: [
-      { hostname: "arkena-coffee.s3.eu-central-1.amazonaws.com" },
-    ],
+    remotePatterns: [{ hostname: "" }],
   },
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   optimizeFonts: false,

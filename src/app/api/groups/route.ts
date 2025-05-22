@@ -6,10 +6,12 @@ import {
 } from "@/lib/services";
 import { getUserGroupsAsAdmin } from "@/lib/groups/groupAdminService"; // Import directly
 import { Group, SportType } from "@/lib/types/models";
-import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
-
-const admin = initializeAdmin();
-
+import {
+  adminApp,
+  adminAuth,
+  adminFirestore,
+  adminStorage,
+} from "@/lib/firebase/firebaseAdmin";
 /**
  * GET /api/groups
  * Get groups based on query parameters
@@ -31,7 +33,7 @@ export async function GET(req: NextRequest) {
 
       // Verify the token and get the user ID
       try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
+        const decodedToken = await adminAuth.verifyIdToken(token);
         userId = decodedToken.uid;
       } catch (error) {
         console.error("Error verifying token:", error);
@@ -112,7 +114,7 @@ export async function POST(req: NextRequest) {
     const token = authHeader.split("Bearer ")[1];
 
     // Verify the token and get the user ID
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    const decodedToken = await adminAuth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
     // Parse the request body

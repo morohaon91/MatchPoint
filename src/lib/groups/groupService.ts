@@ -420,13 +420,13 @@ export async function getGroupMembers(groupId: string): Promise<GroupMember[]> {
       try {
         const userRef = doc(db, "users", userId);
         const userSnap = await getDoc(userRef);
-                
+
         // Create the GroupMember object
         const member: GroupMember = {
           userId,
           // Assign role based on whether the user is in adminIds
           role: adminIds.includes(userId) ? "admin" : "member",
-          user: {}
+          user: {},
         };
         // If user document exists, add user details
         if (userSnap.exists()) {
@@ -434,13 +434,13 @@ export async function getGroupMembers(groupId: string): Promise<GroupMember[]> {
           member.user = {
             name: userData.displayName || userData.name || "Unknown User",
             email: userData.email || "",
-            photoURL: userData.photoURL || undefined
+            photoURL: userData.photoURL || undefined,
           };
         } else {
           member.user = {
             name: "Unknown User",
             email: "",
-            photoURL: undefined
+            photoURL: undefined,
           };
         }
         return member;
@@ -450,7 +450,7 @@ export async function getGroupMembers(groupId: string): Promise<GroupMember[]> {
         return {
           userId,
           role: adminIds.includes(userId) ? "admin" : "member",
-          user: { name: "Unknown User", email: "", photoURL: undefined }
+          user: { name: "Unknown User", email: "", photoURL: undefined },
         };
       }
     });
@@ -460,6 +460,31 @@ export async function getGroupMembers(groupId: string): Promise<GroupMember[]> {
     console.error(`Error fetching members for group ${groupId}:`, error);
     throw new Error(
       `Failed to fetch members for group ${groupId}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+/**
+ * Gets all public groups
+ * @returns A promise that resolves to an array of public groups
+ */
+export async function getPublicGroups(): Promise<Group[]> {
+  try {
+    const groupsRef = collection(db, "groups");
+    const q = query(groupsRef, where("isPublic", "==", true));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        }) as Group,
+    );
+  } catch (error) {
+    console.error("Error fetching public groups:", error);
+    throw new Error(
+      `Failed to fetch public groups: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }

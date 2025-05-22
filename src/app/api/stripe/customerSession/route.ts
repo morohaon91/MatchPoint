@@ -1,10 +1,12 @@
-import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
+import {
+  adminApp,
+  adminAuth,
+  adminFirestore,
+  adminStorage,
+} from "@/lib/firebase/firebaseAdmin";
 import { getStripeServerSide } from "@/lib/stripe/getStripeServerSide";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-
-const admin = initializeAdmin();
-
 export async function GET(req: NextRequest) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeSecretKey) {

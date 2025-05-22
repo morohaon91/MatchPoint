@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 
 // Initialize without credentials for emulator use
 admin.initializeApp({
-  projectId: "matchpoint-c6d86",
+  projectId: "matchpoint-63148",
 });
 
 // Point to the Firestore emulator

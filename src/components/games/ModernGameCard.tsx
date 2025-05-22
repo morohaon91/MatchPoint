@@ -16,6 +16,7 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@/components/ui/Avatar";
+import { Timestamp } from "firebase/firestore";
 
 interface ModernGameCardProps {
   game: Game;
@@ -44,14 +45,38 @@ export default function ModernGameCard({
   className = "",
 }: ModernGameCardProps) {
   // Format date for display
-  const formatGameDate = (date: Date): string => {
-    return new Intl.DateTimeFormat("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }).format(date);
+  const formatGameDate = (timestamp: Timestamp | Date | string): string => {
+    try {
+      let date: Date;
+      
+      if (timestamp instanceof Timestamp) {
+        date = timestamp.toDate();
+      } else if (timestamp instanceof Date) {
+        date = timestamp;
+      } else if (typeof timestamp === 'string') {
+        date = new Date(timestamp);
+      } else {
+        console.error("Invalid timestamp format:", timestamp);
+        return "Invalid date";
+      }
+
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        console.error("Invalid date object:", date);
+        return "Invalid date";
+      }
+
+      return new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      }).format(date);
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Invalid date";
+    }
   };
 
   // Get status badge based on game status
@@ -123,7 +148,7 @@ export default function ModernGameCard({
           sportType={game.sport}
           onClick={() => onRegister && onRegister(game.id)}
         >
-          Register ({spotsLeft} spots left)
+          Add Me to Game
         </Button>
       );
     }
@@ -134,7 +159,7 @@ export default function ModernGameCard({
         size="sm"
         onClick={() => onRegister && onRegister(game.id)}
       >
-        Join Waitlist {waitlistCount ? `(${waitlistCount})` : ""}
+        Add Me to Game
       </Button>
     );
   };
@@ -191,7 +216,7 @@ export default function ModernGameCard({
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-          <span>{formatGameDate(new Date(game.scheduledTime))}</span>
+          <span>{formatGameDate(game.scheduledTime)}</span>
         </div>
 
         {/* Location */}

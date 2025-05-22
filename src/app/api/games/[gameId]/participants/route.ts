@@ -10,6 +10,8 @@ import {
 } from "@/lib/services";
 import { ParticipantStatus } from "@/lib/types/models";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
+import { db } from "@/lib/firebase/firebaseClient";
+import { doc, runTransaction } from "firebase/firestore";
 
 const admin = initializeAdmin();
 
@@ -19,10 +21,10 @@ const admin = initializeAdmin();
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId?: string } }
 ) {
   try {
-    const { gameId } = params;
+    const gameId = params.gameId;
     
     if (!gameId) {
       return NextResponse.json({ error: "Game ID is required" }, { status: 400 });
@@ -113,10 +115,10 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId?: string } }
 ) {
   try {
-    const { gameId } = params;
+    const gameId = params.gameId;
     
     if (!gameId) {
       return NextResponse.json({ error: "Game ID is required" }, { status: 400 });
@@ -134,51 +136,47 @@ export async function POST(
     const decodedToken = await admin.auth().verifyIdToken(token);
     const userId = decodedToken.uid;
     
-    // Get the game to check permissions
-    const game = await getGame(gameId);
-    
-    if (!game) {
-      return NextResponse.json({ error: "Game not found" }, { status: 404 });
-    }
-    
-    // Parse the request body
-    const { participantId, isGuest = false, guestName, status = "pending" } = await req.json();
-    
-    // If adding someone else or a guest, check if user can manage games
-    if ((participantId && participantId !== userId) || isGuest) {
-      const canManage = await canManageGames(userId, game.groupId);
+    // Use a transaction to safely update the game participants
+    await runTransaction(db, async (transaction) => {
+      const gameRef = doc(db, "games", gameId);
+      const gameDoc = await transaction.get(gameRef);
       
-      if (!canManage) {
-        return NextResponse.json(
-          { error: "You do not have permission to add participants to this game" }, 
-          { status: 403 }
-        );
+      if (!gameDoc.exists()) {
+        throw new Error("Game not found");
       }
-    }
+      
+      const gameData = gameDoc.data();
+      if (!gameData) {
+        throw new Error("Game data not found");
+      }
+
+      const participantIds = gameData.participantIds || [];
+      const maxParticipants = gameData.maxParticipants || 0;
+      
+      // Check if user is already a participant
+      if (participantIds.includes(userId)) {
+        throw new Error("User is already a participant");
+      }
+      
+      // Check if game is full
+      if (participantIds.length >= maxParticipants) {
+        throw new Error("Game is full");
+      }
+      
+      // Add user to participants and increment count
+      transaction.update(gameRef, {
+        participantIds: [...participantIds, userId],
+        currentParticipants: (participantIds.length + 1),
+        updatedAt: new Date()
+      });
+    });
     
-    // Check if the user is a member of the group
-    const isMember = await isGroupMember(userId, game.groupId);
-    
-    if (!isMember) {
-      return NextResponse.json(
-        { error: "You must be a member of the group to register for games" }, 
-        { status: 403 }
-      );
-    }
-    
-    // Register for the game
-    const participant = await addGameParticipant(
-      gameId, 
-      participantId || userId, 
-      status === 'confirmed' ? ParticipantStatus.CONFIRMED : ParticipantStatus.WAITLIST
-    );
-    
-    return NextResponse.json({ participant });
-  } catch (error: any) {
-    console.error("Error registering for game:", error);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error adding participant:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to register for game" }, 
-      { status: 500 }
+      { error: error instanceof Error ? error.message : "Failed to join game" },
+      { status: 400 }
     );
   }
 }
@@ -189,10 +187,10 @@ export async function POST(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId?: string } }
 ) {
   try {
-    const { gameId } = params;
+    const gameId = params.gameId;
     
     if (!gameId) {
       return NextResponse.json({ error: "Game ID is required" }, { status: 400 });
@@ -258,13 +256,15 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId?: string } }
 ) {
   try {
-    const { gameId } = params;
+    const gameId = params.gameId;
+    const { searchParams } = new URL(req.url);
+    const participantId = searchParams.get('participantId');
     
-    if (!gameId) {
-      return NextResponse.json({ error: "Game ID is required" }, { status: 400 });
+    if (!gameId || !participantId) {
+      return NextResponse.json({ error: "Game ID and participant ID are required" }, { status: 400 });
     }
     
     // Get the authorization token from the request
@@ -279,42 +279,46 @@ export async function DELETE(
     const decodedToken = await admin.auth().verifyIdToken(token);
     const userId = decodedToken.uid;
     
-    // Get the game to check permissions
-    const game = await getGame(gameId);
-    
-    if (!game) {
-      return NextResponse.json({ error: "Game not found" }, { status: 404 });
+    // Only allow users to remove themselves
+    if (userId !== participantId) {
+      return NextResponse.json({ error: "Unauthorized to remove other participants" }, { status: 403 });
     }
     
-    // Parse the URL to get the participant ID
-    const url = new URL(req.url);
-    const participantId = url.searchParams.get("participantId");
-    
-    if (!participantId) {
-      return NextResponse.json({ error: "Participant ID is required" }, { status: 400 });
-    }
-    
-    // If removing someone else, check if user can manage games
-    if (participantId !== userId) {
-      const canManage = await canManageGames(userId, game.groupId);
+    // Use a transaction to safely update the game participants
+    await runTransaction(db, async (transaction) => {
+      const gameRef = doc(db, "games", gameId);
+      const gameDoc = await transaction.get(gameRef);
       
-      if (!canManage) {
-        return NextResponse.json(
-          { error: "You do not have permission to remove participants from this game" }, 
-          { status: 403 }
-        );
+      if (!gameDoc.exists()) {
+        throw new Error("Game not found");
       }
-    }
+      
+      const gameData = gameDoc.data();
+      if (!gameData) {
+        throw new Error("Game data not found");
+      }
+
+      const participantIds = gameData.participantIds || [];
+      
+      // Check if user is a participant
+      if (!participantIds.includes(userId)) {
+        throw new Error("User is not a participant");
+      }
+      
+      // Remove user from participants and decrement count
+      transaction.update(gameRef, {
+        participantIds: participantIds.filter((id: string) => id !== userId),
+        currentParticipants: (participantIds.length - 1),
+        updatedAt: new Date()
+      });
+    });
     
-    // Remove the participant
-    await removeGameParticipant(gameId, participantId);
-    
-    return NextResponse.json({ message: "Participant removed successfully" });
-  } catch (error: any) {
+    return NextResponse.json({ success: true });
+  } catch (error) {
     console.error("Error removing participant:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to remove participant" }, 
-      { status: 500 }
+      { error: error instanceof Error ? error.message : "Failed to leave game" },
+      { status: 400 }
     );
   }
 }

@@ -346,7 +346,7 @@ export default function GameList({
                                 onClick={() => onJoinGame(game)}
                                 className="inline-flex items-center px-3 py-1 rounded-md bg-blue-100 text-blue-800 hover:bg-blue-200 text-sm font-medium"
                               >
-                                Join
+                                Add Me to Game
                               </button>
                             )}
                         </div>

@@ -29,7 +29,8 @@ import { db } from "@/lib/firebase/firebaseClient";
 import { firestoreConverter } from "@/lib/firebase/converters";
 
 const GroupDetailsPage: React.FC = () => {
-  const { id: groupId } = useParams();
+  const params = useParams();
+  const groupId = typeof params.id === 'string' ? params.id : '';
   const router = useRouter();
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState<"games" | "members" | "settings">(
@@ -121,6 +122,54 @@ const GroupDetailsPage: React.FC = () => {
     setShowCreateGameForm(false);
   }, []);
 
+  // Add handlers for joining and leaving games
+  const handleJoinGame = async (game: Game) => {
+    if (!currentUser) return;
+    
+    try {
+      const response = await fetch(`/api/games/${game.id}/participants`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await currentUser.getIdToken()}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to join game');
+      }
+
+      // The game list will automatically update through the Firestore subscription
+    } catch (error) {
+      console.error('Error joining game:', error);
+      // You might want to show an error message to the user here
+    }
+  };
+
+  const handleLeaveGame = async (game: Game) => {
+    if (!currentUser) return;
+    
+    try {
+      const response = await fetch(`/api/games/${game.id}/participants?participantId=${currentUser.uid}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${await currentUser.getIdToken()}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to leave game');
+      }
+
+      // The game list will automatically update through the Firestore subscription
+    } catch (error) {
+      console.error('Error leaving game:', error);
+      // You might want to show an error message to the user here
+    }
+  };
+
   // Loading and Error States
   const overallLoading =
     groupLoading || membersLoading || upcomingGamesLoading || pastGamesLoading;
@@ -138,12 +187,11 @@ const GroupDetailsPage: React.FC = () => {
   }
 
   if (overallError || !group) {
+    const errorMessage = overallError instanceof Error ? overallError.message : 'Group not found or an error occurred.';
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          <p>
-            {overallError?.message || "Group not found or an error occurred."}
-          </p>
+          <p>{errorMessage}</p>
         </div>
         <button
           onClick={() => router.push("/app/groups")}
@@ -277,9 +325,31 @@ const GroupDetailsPage: React.FC = () => {
             <div className="mt-2">
               <ModernGameForm
                 initialData={{ groupId }}
-                onSubmit={async () => {
+                onSubmit={async (formData) => {
+                  try {
+                    const response = await fetch("/api/games/create", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${await currentUser?.getIdToken()}`,
+                      },
+                      body: JSON.stringify(formData),
+                    });
+
+                    if (!response.ok) {
+                      const errorData = await response.json();
+                      throw new Error(errorData.error || "Failed to create game");
+                    }
+
+                    const result = await response.json();
                   handleCloseCreateGameForm();
-                  router.push(`/app/games/create?groupId=${groupId}`);
+                    
+                    // Optionally refresh the games list here if needed
+                    // You can add a refreshGames() function if needed
+                  } catch (error) {
+                    console.error("Error creating game:", error);
+                    // Handle error appropriately
+                  }
                 }}
                 onCancel={handleCloseCreateGameForm}
               />
@@ -322,6 +392,8 @@ const GroupDetailsPage: React.FC = () => {
                 isLoading={upcomingGamesLoading}
                 emptyMessage="No upcoming games scheduled for this group."
                 isAdmin={canManage ?? false}
+                onJoinGame={handleJoinGame}
+                onLeaveGame={handleLeaveGame}
               />
             </div>
             <div>
@@ -333,6 +405,8 @@ const GroupDetailsPage: React.FC = () => {
                 isLoading={pastGamesLoading}
                 emptyMessage="No past games found for this group."
                 isAdmin={canManage ?? false}
+                onJoinGame={handleJoinGame}
+                onLeaveGame={handleLeaveGame}
               />
             </div>
           </div>

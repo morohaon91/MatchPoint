@@ -1,73 +1,68 @@
-[debug] [2025-05-22T16:00:09.796Z] ----------------------------------------------------------------------
-[debug] [2025-05-22T16:00:09.798Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start
-[debug] [2025-05-22T16:00:09.799Z] CLI Version:   14.3.1
-[debug] [2025-05-22T16:00:09.799Z] Platform:      win32
-[debug] [2025-05-22T16:00:09.799Z] Node Version:  v22.15.0
-[debug] [2025-05-22T16:00:09.799Z] Time:          Thu May 22 2025 19:00:09 GMT+0300 (Israel Daylight Time)
-[debug] [2025-05-22T16:00:09.799Z] ----------------------------------------------------------------------
+[debug] [2025-05-22T16:11:25.064Z] ----------------------------------------------------------------------
+[debug] [2025-05-22T16:11:25.066Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start
+[debug] [2025-05-22T16:11:25.066Z] CLI Version:   14.3.1
+[debug] [2025-05-22T16:11:25.067Z] Platform:      win32
+[debug] [2025-05-22T16:11:25.067Z] Node Version:  v22.15.0
+[debug] [2025-05-22T16:11:25.067Z] Time:          Thu May 22 2025 19:11:25 GMT+0300 (Israel Daylight Time)
+[debug] [2025-05-22T16:11:25.067Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2025-05-22T16:00:09.963Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2025-05-22T16:00:09.964Z] > authorizing via signed-in user (morohayon91@gmail.com)
-[debug] [2025-05-22T16:00:10.006Z] java version "24.0.1" 2025-04-15
+[debug] [2025-05-22T16:11:25.237Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-05-22T16:11:25.238Z] > authorizing via signed-in user (morohayon91@gmail.com)
+[debug] [2025-05-22T16:11:25.274Z] java version "24.0.1" 2025-04-15
 Java(TM) SE Runtime Environment (build 24.0.1+9-30)
 
-[debug] [2025-05-22T16:00:10.006Z] Java HotSpot(TM) 64-Bit Server VM (build 24.0.1+9-30, mixed mode, sharing)
+[debug] [2025-05-22T16:11:25.274Z] Java HotSpot(TM) 64-Bit Server VM (build 24.0.1+9-30, mixed mode, sharing)
 
-[debug] [2025-05-22T16:00:10.015Z] Parsed Java major version: 24
+[debug] [2025-05-22T16:11:25.283Z] Parsed Java major version: 24
 [info] i  emulators: Starting emulators: apphosting, auth, functions, firestore, database, hosting, pubsub, storage, extensions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: apphosting, auth, functions, firestore, database, hosting, pubsub, storage, extensions"}}
-[debug] [2025-05-22T16:00:10.017Z] Checked if tokens are valid: false, expires at: 1747930144104
-[debug] [2025-05-22T16:00:10.017Z] Checked if tokens are valid: false, expires at: 1747930144104
-[debug] [2025-05-22T16:00:10.017Z] > refreshing access token with scopes: []
-[debug] [2025-05-22T16:00:10.019Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
-[debug] [2025-05-22T16:00:10.019Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
-[debug] [2025-05-22T16:00:10.280Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
-[debug] [2025-05-22T16:00:10.280Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
-[debug] [2025-05-22T16:00:10.285Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/matchpoint-63148/services/cloudresourcemanager.googleapis.com [none]
-[debug] [2025-05-22T16:00:10.285Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/matchpoint-63148/services/cloudresourcemanager.googleapis.com x-goog-quota-user=projects/matchpoint-63148
-[debug] [2025-05-22T16:00:11.579Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/matchpoint-63148/services/cloudresourcemanager.googleapis.com 200
-[debug] [2025-05-22T16:00:11.579Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/matchpoint-63148/services/cloudresourcemanager.googleapis.com [omitted]
-[debug] [2025-05-22T16:00:11.579Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:11.579Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:11.579Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/matchpoint-63148 [none]
-[debug] [2025-05-22T16:00:12.712Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/matchpoint-63148 200
-[debug] [2025-05-22T16:00:12.712Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/matchpoint-63148 {"projectNumber":"16232432665","projectId":"matchpoint-63148","lifecycleState":"ACTIVE","name":"MatchPoint","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-05-11T22:17:26.076452Z"}
-[debug] [2025-05-22T16:00:12.725Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.725Z] [apphosting] App Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.725Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.725Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.725Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.725Z] [database] Database Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.726Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.726Z] [pubsub] Pub/Sub Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.726Z] [storage] Storage Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.726Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"apphosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"database":[{"address":"127.0.0.1","family":"IPv4","port":9000}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5003}],"pubsub":[{"address":"127.0.0.1","family":"IPv4","port":8085}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9199}]},"metadata":{"message":"assigned listening specs for emulators"}}
-[debug] [2025-05-22T16:00:12.729Z] [hub] writing locator at C:\Users\Mor\AppData\Local\Temp\hub-matchpoint-63148.json
-[debug] [2025-05-22T16:00:12.732Z] [Extensions] Started Extensions emulator, this is a noop.
-[debug] [2025-05-22T16:00:12.735Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.735Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.736Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-05-22T16:00:12.736Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"apphosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"database":[{"address":"127.0.0.1","family":"IPv4","port":9000}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5003}],"pubsub":[{"address":"127.0.0.1","family":"IPv4","port":8085}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9199}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[debug] [2025-05-22T16:11:25.285Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:25.285Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:25.286Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/matchpoint-63148/services/cloudresourcemanager.googleapis.com [none]
+[debug] [2025-05-22T16:11:25.286Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/matchpoint-63148/services/cloudresourcemanager.googleapis.com x-goog-quota-user=projects/matchpoint-63148
+[debug] [2025-05-22T16:11:26.594Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/matchpoint-63148/services/cloudresourcemanager.googleapis.com 200
+[debug] [2025-05-22T16:11:26.594Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/matchpoint-63148/services/cloudresourcemanager.googleapis.com [omitted]
+[debug] [2025-05-22T16:11:26.595Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:26.595Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:26.595Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/matchpoint-63148 [none]
+[debug] [2025-05-22T16:11:27.608Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/matchpoint-63148 200
+[debug] [2025-05-22T16:11:27.608Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/matchpoint-63148 {"projectNumber":"16232432665","projectId":"matchpoint-63148","lifecycleState":"ACTIVE","name":"MatchPoint","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-05-11T22:17:26.076452Z"}
+[debug] [2025-05-22T16:11:27.622Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.622Z] [apphosting] App Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.622Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.622Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.622Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.622Z] [database] Database Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.622Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.622Z] [pubsub] Pub/Sub Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.623Z] [storage] Storage Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.623Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"apphosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"database":[{"address":"127.0.0.1","family":"IPv4","port":9000}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5003}],"pubsub":[{"address":"127.0.0.1","family":"IPv4","port":8085}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9199}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2025-05-22T16:11:27.626Z] [hub] writing locator at C:\Users\Mor\AppData\Local\Temp\hub-matchpoint-63148.json
+[debug] [2025-05-22T16:11:27.630Z] [Extensions] Started Extensions emulator, this is a noop.
+[debug] [2025-05-22T16:11:27.633Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.633Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.633Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-22T16:11:27.633Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"apphosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"database":[{"address":"127.0.0.1","family":"IPv4","port":9000}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5003}],"pubsub":[{"address":"127.0.0.1","family":"IPv4","port":8085}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9199}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
 [warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mdataconnect\u001b[22m"}}
-[debug] [2025-05-22T16:00:12.806Z] defaultcredentials: writing to file C:\Users\Mor\AppData\Roaming\firebase\morohayon91_gmail_com_application_default_credentials.json
-[debug] [2025-05-22T16:00:12.807Z] Setting GAC to C:\Users\Mor\AppData\Roaming\firebase\morohayon91_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\Mor\\AppData\\Roaming\\firebase\\morohayon91_gmail_com_application_default_credentials.json"}}
-[debug] [2025-05-22T16:00:12.807Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:12.807Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:12.807Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/adminSdkConfig [none]
-[debug] [2025-05-22T16:00:13.252Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/adminSdkConfig 200
-[debug] [2025-05-22T16:00:13.252Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/adminSdkConfig {"projectId":"matchpoint-63148","storageBucket":"matchpoint-63148.firebasestorage.app"}
-[debug] [2025-05-22T16:00:13.262Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
-[debug] [2025-05-22T16:00:13.262Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\Mor\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.19.8.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--project_id","matchpoint-63148","--rules","C:\\Users\\Mor\\Desktop\\Repos\\MatchPoint\\firebase\\firestore.rules","--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\Mor\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.19.8.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--project_id\",\"matchpoint-63148\",\"--rules\",\"C:\\\\Users\\\\Mor\\\\Desktop\\\\Repos\\\\MatchPoint\\\\firebase\\\\firestore.rules\",\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[debug] [2025-05-22T16:11:27.704Z] defaultcredentials: writing to file C:\Users\Mor\AppData\Roaming\firebase\morohayon91_gmail_com_application_default_credentials.json
+[debug] [2025-05-22T16:11:27.705Z] Setting GAC to C:\Users\Mor\AppData\Roaming\firebase\morohayon91_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\Mor\\AppData\\Roaming\\firebase\\morohayon91_gmail_com_application_default_credentials.json"}}
+[debug] [2025-05-22T16:11:27.705Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:27.706Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:27.706Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/adminSdkConfig [none]
+[debug] [2025-05-22T16:11:28.145Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/adminSdkConfig 200
+[debug] [2025-05-22T16:11:28.145Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/adminSdkConfig {"projectId":"matchpoint-63148","storageBucket":"matchpoint-63148.firebasestorage.app"}
+[debug] [2025-05-22T16:11:28.156Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-05-22T16:11:28.156Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\Mor\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.19.8.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--project_id","matchpoint-63148","--rules","C:\\Users\\Mor\\Desktop\\Repos\\MatchPoint\\firebase\\firestore.rules","--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\Mor\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.19.8.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--project_id\",\"matchpoint-63148\",\"--rules\",\"C:\\\\Users\\\\Mor\\\\Desktop\\\\Repos\\\\MatchPoint\\\\firebase\\\\firestore.rules\",\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
 [info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
-[debug] [2025-05-22T16:00:13.485Z] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[debug] [2025-05-22T16:11:28.379Z] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Users/Mor/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar)
 WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
  {"metadata":{"emulator":{"name":"firestore"},"message":"WARNING: A terminally deprecated method in sun.misc.Unsafe has been called\nWARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Users/Mor/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar)\nWARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4\nWARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release\r\n"}}
-[debug] [2025-05-22T16:00:14.129Z] May 22, 2025 7:00:14 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+[debug] [2025-05-22T16:11:29.048Z] May 22, 2025 7:11:29 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
 INFO: Started WebSocket server on ws://127.0.0.1:9150
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:00:14 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\r\nINFO: Started WebSocket server on ws://127.0.0.1:9150\r\n"}}
-[debug] [2025-05-22T16:00:14.180Z] API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://"}}
-[debug] [2025-05-22T16:00:14.180Z] 127.0.0.1:8080
+ {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:11:29 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\r\nINFO: Started WebSocket server on ws://127.0.0.1:9150\r\n"}}
+[debug] [2025-05-22T16:11:29.097Z] API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://"}}
+[debug] [2025-05-22T16:11:29.097Z] 127.0.0.1:8080
 If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
 
    export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
@@ -81,63 +76,63 @@ Dev App Server is now running.
 
  {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8080\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\r\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\r\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\r\nDev App Server is now running.\n\r\n"}}
 [info] +  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
-[debug] [2025-05-22T16:00:14.284Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:14.284Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:14.284Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 [none]
-[debug] [2025-05-22T16:00:14.533Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 200
-[debug] [2025-05-22T16:00:14.534Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 {"projectId":"matchpoint-63148","projectNumber":"16232432665","displayName":"MatchPoint","name":"projects/matchpoint-63148","resources":{"hostingSite":"matchpoint-63148"},"state":"ACTIVE","etag":"1_1ea2df56-862e-4199-8f33-8eb5b6c283cb"}
-[debug] [2025-05-22T16:00:14.534Z] database rules config:  []
+[debug] [2025-05-22T16:11:29.178Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:29.178Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:29.178Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 [none]
+[debug] [2025-05-22T16:11:29.424Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 200
+[debug] [2025-05-22T16:11:29.424Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 {"projectId":"matchpoint-63148","projectNumber":"16232432665","displayName":"MatchPoint","name":"projects/matchpoint-63148","resources":{"hostingSite":"matchpoint-63148"},"state":"ACTIVE","etag":"1_1ea2df56-862e-4199-8f33-8eb5b6c283cb"}
+[debug] [2025-05-22T16:11:29.425Z] database rules config:  []
 [warn] !  database: Did not find a Realtime Database rules file specified in a firebase.json config file. The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration. {"metadata":{"emulator":{"name":"database"},"message":"Did not find a Realtime Database rules file specified in a firebase.json config file. The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration."}}
-[debug] [2025-05-22T16:00:14.535Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: projectId"}}
-[debug] [2025-05-22T16:00:14.535Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: auto_download"}}
-[debug] [2025-05-22T16:00:14.535Z] Ignoring empty arg for key: single_project_mode {"metadata":{"emulator":{"name":"database"},"message":"Ignoring empty arg for key: single_project_mode"}}
-[debug] [2025-05-22T16:00:14.535Z] Ignoring unsupported arg: rules {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: rules"}}
-[debug] [2025-05-22T16:00:14.535Z] Starting Database Emulator with command {"binary":"java","args":["-Duser.language=en","-jar","C:\\Users\\Mor\\.cache\\firebase\\emulators\\firebase-database-emulator-v4.11.2.jar","--host","127.0.0.1","--port",9000,"--functions_emulator_host","127.0.0.1","--functions_emulator_port",5001],"optionalArgs":["port","host","functions_emulator_port","functions_emulator_host","single_project_mode"],"joinArgs":false,"shell":false,"port":9000} {"metadata":{"emulator":{"name":"database"},"message":"Starting Database Emulator with command {\"binary\":\"java\",\"args\":[\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\Mor\\\\.cache\\\\firebase\\\\emulators\\\\firebase-database-emulator-v4.11.2.jar\",\"--host\",\"127.0.0.1\",\"--port\",9000,\"--functions_emulator_host\",\"127.0.0.1\",\"--functions_emulator_port\",5001],\"optionalArgs\":[\"port\",\"host\",\"functions_emulator_port\",\"functions_emulator_host\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":9000}"}}
+[debug] [2025-05-22T16:11:29.425Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2025-05-22T16:11:29.425Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-05-22T16:11:29.425Z] Ignoring empty arg for key: single_project_mode {"metadata":{"emulator":{"name":"database"},"message":"Ignoring empty arg for key: single_project_mode"}}
+[debug] [2025-05-22T16:11:29.425Z] Ignoring unsupported arg: rules {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: rules"}}
+[debug] [2025-05-22T16:11:29.426Z] Starting Database Emulator with command {"binary":"java","args":["-Duser.language=en","-jar","C:\\Users\\Mor\\.cache\\firebase\\emulators\\firebase-database-emulator-v4.11.2.jar","--host","127.0.0.1","--port",9000,"--functions_emulator_host","127.0.0.1","--functions_emulator_port",5001],"optionalArgs":["port","host","functions_emulator_port","functions_emulator_host","single_project_mode"],"joinArgs":false,"shell":false,"port":9000} {"metadata":{"emulator":{"name":"database"},"message":"Starting Database Emulator with command {\"binary\":\"java\",\"args\":[\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\Mor\\\\.cache\\\\firebase\\\\emulators\\\\firebase-database-emulator-v4.11.2.jar\",\"--host\",\"127.0.0.1\",\"--port\",9000,\"--functions_emulator_host\",\"127.0.0.1\",\"--functions_emulator_port\",5001],\"optionalArgs\":[\"port\",\"host\",\"functions_emulator_port\",\"functions_emulator_host\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":9000}"}}
 [info] i  database: Database Emulator logging to database-debug.log {"metadata":{"emulator":{"name":"database"},"message":"Database Emulator logging to \u001b[1mdatabase-debug.log\u001b[22m"}}
-[debug] [2025-05-22T16:00:15.251Z] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[debug] [2025-05-22T16:11:30.132Z] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::objectFieldOffset has been called by akka.util.Unsafe (file:/C:/Users/Mor/.cache/firebase/emulators/firebase-database-emulator-v4.11.2.jar)
 WARNING: Please consider reporting this to the maintainers of class akka.util.Unsafe
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
  {"metadata":{"emulator":{"name":"database"},"message":"WARNING: A terminally deprecated method in sun.misc.Unsafe has been called\nWARNING: sun.misc.Unsafe::objectFieldOffset has been called by akka.util.Unsafe (file:/C:/Users/Mor/.cache/firebase/emulators/firebase-database-emulator-v4.11.2.jar)\nWARNING: Please consider reporting this to the maintainers of class akka.util.Unsafe\nWARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release\r\n"}}
-[debug] [2025-05-22T16:00:15.341Z] 19:00:15.340 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
- {"metadata":{"emulator":{"name":"database"},"message":"19:00:15.340 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started\r\n"}}
-[debug] [2025-05-22T16:00:15.467Z] 19:00:15.467 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
- {"metadata":{"emulator":{"name":"database"},"message":"19:00:15.467 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000\r\n"}}
-[debug] [2025-05-22T16:00:20.405Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"pubsub"},"message":"Ignoring unsupported arg: projectId"}}
-[debug] [2025-05-22T16:00:20.406Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"pubsub"},"message":"Ignoring unsupported arg: auto_download"}}
-[debug] [2025-05-22T16:00:20.406Z] Starting Pub/Sub Emulator with command {"binary":"C:\\Users\\Mor\\.cache\\firebase\\emulators\\pubsub-emulator-0.8.14\\pubsub-emulator\\bin\\cloud-pubsub-emulator.bat","args":["--host=127.0.0.1","--port=8085"],"optionalArgs":["port","host"],"joinArgs":true,"shell":true,"port":8085} {"metadata":{"emulator":{"name":"pubsub"},"message":"Starting Pub/Sub Emulator with command {\"binary\":\"C:\\\\Users\\\\Mor\\\\.cache\\\\firebase\\\\emulators\\\\pubsub-emulator-0.8.14\\\\pubsub-emulator\\\\bin\\\\cloud-pubsub-emulator.bat\",\"args\":[\"--host=127.0.0.1\",\"--port=8085\"],\"optionalArgs\":[\"port\",\"host\"],\"joinArgs\":true,\"shell\":true,\"port\":8085}"}}
+[debug] [2025-05-22T16:11:30.220Z] 19:11:30.219 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+ {"metadata":{"emulator":{"name":"database"},"message":"19:11:30.219 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started\r\n"}}
+[debug] [2025-05-22T16:11:30.350Z] 19:11:30.350 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+ {"metadata":{"emulator":{"name":"database"},"message":"19:11:30.350 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000\r\n"}}
+[debug] [2025-05-22T16:11:35.169Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"pubsub"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2025-05-22T16:11:35.169Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"pubsub"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-05-22T16:11:35.169Z] Starting Pub/Sub Emulator with command {"binary":"C:\\Users\\Mor\\.cache\\firebase\\emulators\\pubsub-emulator-0.8.14\\pubsub-emulator\\bin\\cloud-pubsub-emulator.bat","args":["--host=127.0.0.1","--port=8085"],"optionalArgs":["port","host"],"joinArgs":true,"shell":true,"port":8085} {"metadata":{"emulator":{"name":"pubsub"},"message":"Starting Pub/Sub Emulator with command {\"binary\":\"C:\\\\Users\\\\Mor\\\\.cache\\\\firebase\\\\emulators\\\\pubsub-emulator-0.8.14\\\\pubsub-emulator\\\\bin\\\\cloud-pubsub-emulator.bat\",\"args\":[\"--host=127.0.0.1\",\"--port=8085\"],\"optionalArgs\":[\"port\",\"host\"],\"joinArgs\":true,\"shell\":true,\"port\":8085}"}}
 [info] i  pubsub: Pub/Sub Emulator logging to pubsub-debug.log {"metadata":{"emulator":{"name":"pubsub"},"message":"Pub/Sub Emulator logging to \u001b[1mpubsub-debug.log\u001b[22m"}}
-[debug] [2025-05-22T16:00:21.633Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"storage"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-05-22T16:11:36.401Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"storage"},"message":"Ignoring unsupported arg: port"}}
 [warn] !  Unexpected rules runtime error: WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.google.protobuf.UnsafeUtil$MemoryAccessor (file:/C:/Users/Mor/.cache/firebase/emulators/cloud-storage-rules-runtime-v1.1.3.jar)
 WARNING: Please consider reporting this to the maintainers of class com.google.protobuf.UnsafeUtil$MemoryAccessor
 WARNING: sun.misc.Unsafe::arrayBaseOffset will be removed in a future release
  {"metadata":{"emulator":{"name":"storage"},"message":"Unexpected rules runtime error: WARNING: A terminally deprecated method in sun.misc.Unsafe has been called\nWARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.google.protobuf.UnsafeUtil$MemoryAccessor (file:/C:/Users/Mor/.cache/firebase/emulators/cloud-storage-rules-runtime-v1.1.3.jar)\nWARNING: Please consider reporting this to the maintainers of class com.google.protobuf.UnsafeUtil$MemoryAccessor\nWARNING: sun.misc.Unsafe::arrayBaseOffset will be removed in a future release\r\n"}}
-[debug] [2025-05-22T16:00:22.216Z] Temp file directory for storage emulator: C:\Users\Mor\AppData\Local\Temp/firebase/storage/blobs {"metadata":{"emulator":{"name":"storage"},"message":"Temp file directory for storage emulator: C:\\Users\\Mor\\AppData\\Local\\Temp/firebase/storage/blobs"}}
-[debug] [2025-05-22T16:00:22.219Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:22.219Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:22.219Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/matchpoint-63148/sites 
-[debug] [2025-05-22T16:00:23.737Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/matchpoint-63148/sites 200
-[debug] [2025-05-22T16:00:23.737Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/matchpoint-63148/sites {"sites":[{"name":"projects/matchpoint-63148/sites/matchpoint-63148","defaultUrl":"https://matchpoint-63148.web.app","appId":"1:16232432665:web:d0d478be93fd307acfd688","type":"DEFAULT_SITE"}]}
-[debug] [2025-05-22T16:00:23.737Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:23.737Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:23.737Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/webApps/1:16232432665:web:d0d478be93fd307acfd688/config [none]
-[debug] [2025-05-22T16:00:24.512Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/webApps/1:16232432665:web:d0d478be93fd307acfd688/config 200
-[debug] [2025-05-22T16:00:24.512Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/webApps/1:16232432665:web:d0d478be93fd307acfd688/config {"projectId":"matchpoint-63148","appId":"1:16232432665:web:d0d478be93fd307acfd688","storageBucket":"matchpoint-63148.firebasestorage.app","apiKey":"AIzaSyCs3czNezdAnij8cU2ctSxPTXfJJXg--yw","authDomain":"matchpoint-63148.firebaseapp.com","messagingSenderId":"16232432665","measurementId":"G-QNLR5QP5HS"}
-[debug] [2025-05-22T16:00:24.515Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:24.515Z] Checked if tokens are valid: true, expires at: 1747933209280
-[debug] [2025-05-22T16:00:24.515Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 [none]
-[debug] [2025-05-22T16:00:24.855Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 200
-[debug] [2025-05-22T16:00:24.855Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 {"projectId":"matchpoint-63148","projectNumber":"16232432665","displayName":"MatchPoint","name":"projects/matchpoint-63148","resources":{"hostingSite":"matchpoint-63148"},"state":"ACTIVE","etag":"1_1ea2df56-862e-4199-8f33-8eb5b6c283cb"}
+[debug] [2025-05-22T16:11:36.987Z] Temp file directory for storage emulator: C:\Users\Mor\AppData\Local\Temp/firebase/storage/blobs {"metadata":{"emulator":{"name":"storage"},"message":"Temp file directory for storage emulator: C:\\Users\\Mor\\AppData\\Local\\Temp/firebase/storage/blobs"}}
+[debug] [2025-05-22T16:11:36.991Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:36.991Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:36.991Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/matchpoint-63148/sites 
+[debug] [2025-05-22T16:11:38.197Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/matchpoint-63148/sites 200
+[debug] [2025-05-22T16:11:38.197Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/matchpoint-63148/sites {"sites":[{"name":"projects/matchpoint-63148/sites/matchpoint-63148","defaultUrl":"https://matchpoint-63148.web.app","appId":"1:16232432665:web:d0d478be93fd307acfd688","type":"DEFAULT_SITE"}]}
+[debug] [2025-05-22T16:11:38.197Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:38.197Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:38.197Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/webApps/1:16232432665:web:d0d478be93fd307acfd688/config [none]
+[debug] [2025-05-22T16:11:38.916Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/webApps/1:16232432665:web:d0d478be93fd307acfd688/config 200
+[debug] [2025-05-22T16:11:38.916Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148/webApps/1:16232432665:web:d0d478be93fd307acfd688/config {"projectId":"matchpoint-63148","appId":"1:16232432665:web:d0d478be93fd307acfd688","storageBucket":"matchpoint-63148.firebasestorage.app","apiKey":"AIzaSyCs3czNezdAnij8cU2ctSxPTXfJJXg--yw","authDomain":"matchpoint-63148.firebaseapp.com","messagingSenderId":"16232432665","measurementId":"G-QNLR5QP5HS"}
+[debug] [2025-05-22T16:11:38.919Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:38.919Z] Checked if tokens are valid: true, expires at: 1747933209280
+[debug] [2025-05-22T16:11:38.919Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 [none]
+[debug] [2025-05-22T16:11:39.157Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 200
+[debug] [2025-05-22T16:11:39.158Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/matchpoint-63148 {"projectId":"matchpoint-63148","projectNumber":"16232432665","displayName":"MatchPoint","name":"projects/matchpoint-63148","resources":{"hostingSite":"matchpoint-63148"},"state":"ACTIVE","etag":"1_1ea2df56-862e-4199-8f33-8eb5b6c283cb"}
 [info] i  hosting[matchpoint-63148]: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mpublic\u001b[22m"}}
 [info] +  hosting[matchpoint-63148]: Local server: http://127.0.0.1:5003 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://127.0.0.1:5003\u001b[22m\u001b[24m"}}
 [info] i  apphosting: running custom start command: 'npm run dev' {"metadata":{"emulator":{"name":"apphosting"},"message":"running custom start command: 'npm run dev'"}}
-[debug] [2025-05-22T16:00:24.877Z] [Extensions] Connecting Extensions emulator, this is a noop.
+[debug] [2025-05-22T16:11:39.994Z] [Extensions] Connecting Extensions emulator, this is a noop.
 [info] i  apphosting: connecting apphosting emulator {"metadata":{"emulator":{"name":"apphosting"},"message":"connecting apphosting emulator"}}
 [info] i  functions: Watching "C:\Users\Mor\Desktop\Repos\MatchPoint\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\Mor\\Desktop\\Repos\\MatchPoint\\functions\" for Cloud Functions..."}}
-[debug] [2025-05-22T16:00:24.883Z] Validating nodejs source
+[debug] [2025-05-22T16:11:39.999Z] Validating nodejs source
 [warn] !  functions: Couldn't find firebase-functions package in your source code. Have you run 'npm install'? 
-[debug] [2025-05-22T16:00:24.884Z] getFunctionsSDKVersion encountered error: Cannot find module 'firebase-functions'
+[debug] [2025-05-22T16:11:40.000Z] getFunctionsSDKVersion encountered error: Cannot find module 'firebase-functions'
 Require stack:
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\versioning.js
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js
@@ -152,8 +147,8 @@ Require stack:
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\index.js
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\cli.js
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js {"code":"MODULE_NOT_FOUND","requireStack":["C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\node\\versioning.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\node\\index.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\index.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\prepare.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorShared.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulator.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\controller.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\commandUtils.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\commands\\database-get.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\commands\\index.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\index.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\bin\\cli.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\bin\\firebase.js"]}
-[debug] [2025-05-22T16:00:24.884Z] checkFunctionsSDKVersion encountered error: Invalid Version:  {}
-[debug] [2025-05-22T16:00:24.884Z] > [functions] package.json contents: {
+[debug] [2025-05-22T16:11:40.000Z] checkFunctionsSDKVersion encountered error: Invalid Version:  {}
+[debug] [2025-05-22T16:11:40.001Z] > [functions] package.json contents: {
   "name": "functions",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
@@ -188,9 +183,9 @@ Require stack:
 
  functions\lib\index.js does not exist, can't deploy Cloud Functions {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: There was an error reading functions\\package.json:\n\n functions\\lib\\index.js does not exist, can't deploy Cloud Functions"}}
 [info] i  functions: Watching "C:\Users\Mor\Desktop\Repos\MatchPoint\matchpoint" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\Mor\\Desktop\\Repos\\MatchPoint\\matchpoint\" for Cloud Functions..."}}
-[debug] [2025-05-22T16:00:24.886Z] Validating nodejs source
+[debug] [2025-05-22T16:11:40.003Z] Validating nodejs source
 [warn] !  functions: Couldn't find firebase-functions package in your source code. Have you run 'npm install'? 
-[debug] [2025-05-22T16:00:24.887Z] getFunctionsSDKVersion encountered error: Cannot find module 'firebase-functions'
+[debug] [2025-05-22T16:11:40.004Z] getFunctionsSDKVersion encountered error: Cannot find module 'firebase-functions'
 Require stack:
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\versioning.js
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js
@@ -205,8 +200,8 @@ Require stack:
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\index.js
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\cli.js
 - C:\Users\Mor\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js {"code":"MODULE_NOT_FOUND","requireStack":["C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\node\\versioning.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\node\\index.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\index.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\prepare.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorShared.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulator.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\controller.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\commandUtils.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\commands\\database-get.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\commands\\index.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\index.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\bin\\cli.js","C:\\Users\\Mor\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\bin\\firebase.js"]}
-[debug] [2025-05-22T16:00:24.887Z] checkFunctionsSDKVersion encountered error: Invalid Version:  {}
-[debug] [2025-05-22T16:00:24.888Z] > [functions] package.json contents: {
+[debug] [2025-05-22T16:11:40.004Z] checkFunctionsSDKVersion encountered error: Invalid Version:  {}
+[debug] [2025-05-22T16:11:40.004Z] > [functions] package.json contents: {
   "name": "functions",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
@@ -240,7 +235,7 @@ Require stack:
 [error] !!  functions: Failed to load function definition from source: FirebaseError: There was an error reading matchpoint\package.json:
 
  matchpoint\lib\index.js does not exist, can't deploy Cloud Functions {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: There was an error reading matchpoint\\package.json:\n\n matchpoint\\lib\\index.js does not exist, can't deploy Cloud Functions"}}
-[debug] [2025-05-22T16:00:24.891Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[debug] [2025-05-22T16:11:40.007Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
 [info] 
 ┌─────────────────────────────────────────────────────────────┐
 │ ✔  All emulators ready! It is now safe to connect your app. │
@@ -275,83 +270,3 @@ Require stack:
 └─────────────────────────┴───────────────┴─────────────────────┘
 Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
  
-[info] i  apphosting: Dev Server stopped {"metadata":{"emulator":{"name":"apphosting"},"message":"Dev Server stopped"}}
-[debug] [2025-05-22T16:00:26.224Z] May 22, 2025 7:00:26 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
-INFO: Connected to new websocket client
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:00:26 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\r\nINFO: Connected to new websocket client\r\n"}}
-[debug] [2025-05-22T16:00:53.194Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/matchpoint-63148/trigger_multicast [none]
-[debug] [2025-05-22T16:00:53.194Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/matchpoint-63148/trigger_multicast {"eventId":"47f17be5-f196-413e-a4ba-7e33726a240b","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/matchpoint-63148","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2025-05-22T16:00:53.194Z","data":{"uid":"9SkGoMt8OqLSQhX93xPNqdBwNV3i","email":"algae.algae.359@example.com","emailVerified":true,"displayName":"Algae Algae","metadata":{"creationTime":"2025-05-22T16:00:53.193Z","lastSignInTime":"2025-05-22T16:00:53.193Z"},"customClaims":{},"providerData":[{"providerId":"google.com","rawId":"0475095188369624322684695695658309029350","federatedId":"0475095188369624322684695695658309029350","displayName":"Algae Algae","email":"algae.algae.359@example.com","screenName":"algae_algae"}]}}
-[debug] [2025-05-22T16:00:53.203Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/matchpoint-63148/trigger_multicast 200
-[debug] [2025-05-22T16:00:53.203Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/matchpoint-63148/trigger_multicast {"status":"multicast_acknowledged"}
-[debug] [2025-05-22T16:00:54.753Z] May 22, 2025 7:00:54 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:00:54 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:00:55.297Z] May 22, 2025 7:00:55 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:00:55 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:00:55.787Z] May 22, 2025 7:00:55 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:00:55 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:00:56.108Z] May 22, 2025 7:00:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:00:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:00:56.432Z] May 22, 2025 7:00:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:00:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:01:08.735Z] May 22, 2025 7:01:08 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:01:08 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:01:09.060Z] May 22, 2025 7:01:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:01:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:01:09.372Z] May 22, 2025 7:01:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:01:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:01:11.371Z] May 22, 2025 7:01:11 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:01:11 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:01:11.696Z] May 22, 2025 7:01:11 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:01:11 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:01:42.060Z] May 22, 2025 7:01:42 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:01:42 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:01:49.870Z] May 22, 2025 7:01:49 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:01:49 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:01:50.198Z] May 22, 2025 7:01:50 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:01:50 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:02:04.159Z] May 22, 2025 7:02:04 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:02:04 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:02:04.486Z] May 22, 2025 7:02:04 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:02:04 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:02:09.729Z] May 22, 2025 7:02:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:02:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:02:09.730Z] May 22, 2025 7:02:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:02:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:02:09.733Z] May 22, 2025 7:02:09 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:02:09 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose\r\nINFO: channel closed\r\n"}}
-[debug] [2025-05-22T16:02:34.812Z] May 22, 2025 7:02:34 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:02:34 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:03:34.820Z] May 22, 2025 7:03:34 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:03:34 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:04:35.138Z] May 22, 2025 7:04:35 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:04:35 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:05:35.147Z] May 22, 2025 7:05:35 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:05:35 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:05:53.759Z] May 22, 2025 7:05:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:05:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}
-[debug] [2025-05-22T16:05:54.071Z] May 22, 2025 7:05:54 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"May 22, 2025 7:05:54 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected non-HTTP/2 connection.\r\n"}}

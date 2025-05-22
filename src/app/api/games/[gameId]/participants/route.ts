@@ -12,8 +12,8 @@ import { ParticipantStatus } from "@/lib/types/models";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 import { db } from "@/lib/firebase/firebaseClient";
 import { doc, runTransaction } from "firebase/firestore";
+import { admin } from "@/lib/firebase/firebaseAdmin";
 
-// Initialize Firebase Admin
 const admin = initializeAdmin();
 
 /**
@@ -55,7 +55,7 @@ export async function GET(
     }
     
     // Check if the user is a member of the group
-    if (userId && game.groupId) {
+    if (userId) {
       const isMember = await isGroupMember(userId, game.groupId);
       
       if (!isMember) {
@@ -141,7 +141,7 @@ export async function POST(
     await runTransaction(db, async (transaction) => {
       const gameRef = doc(db, "games", gameId);
       const gameDoc = await transaction.get(gameRef);
-    
+      
       if (!gameDoc.exists()) {
         throw new Error("Game not found");
       }
@@ -157,13 +157,13 @@ export async function POST(
       // Check if user is already a participant
       if (participantIds.includes(userId)) {
         throw new Error("User is already a participant");
-    }
-    
+      }
+      
       // Check if game is full
       if (participantIds.length >= maxParticipants) {
         throw new Error("Game is full");
-    }
-    
+      }
+      
       // Add user to participants and increment count
       transaction.update(gameRef, {
         participantIds: [...participantIds, userId],
@@ -227,7 +227,7 @@ export async function PUT(
     }
     
     // If updating someone else's status, check if user can manage games
-    if (participantId !== userId && game.groupId) {
+    if (participantId !== userId) {
       const canManage = await canManageGames(userId, game.groupId);
       
       if (!canManage) {
@@ -289,7 +289,7 @@ export async function DELETE(
     await runTransaction(db, async (transaction) => {
       const gameRef = doc(db, "games", gameId);
       const gameDoc = await transaction.get(gameRef);
-    
+      
       if (!gameDoc.exists()) {
         throw new Error("Game not found");
       }

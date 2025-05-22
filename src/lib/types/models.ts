@@ -5,6 +5,8 @@
  * used throughout the MatchPoint application.
  */
 
+import { Timestamp, FieldValue } from "firebase/firestore";
+
 /**
  * Sport types supported by the application
  */
@@ -34,6 +36,23 @@ export enum ParticipantStatus {
   WAITLIST = "Waitlist",
   INVITED = "Invited",
   DECLINED = "Declined",
+}
+
+/**
+ * GameParticipant model
+ */
+export interface GameParticipant {
+  id: string;
+  gameId: string;
+  userId: string;
+  status: ParticipantStatus;
+  joinedAt: Timestamp;
+  registeredAt: Timestamp;
+  role: 'host' | 'player' | 'organizer';
+  isGuest: boolean;
+  // Optional user details for quick access
+  displayName?: string;
+  photoURL?: string;
 }
 
 /**
@@ -115,15 +134,17 @@ export interface Game {
   description?: string;
   sport: SportType;
   groupId?: string;
-  createdAt: string | Date;
-  updatedAt: string | Date;
+  groupName?: string; // Name of the group this game belongs to
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
   createdBy: string; // User ID
   hostId: string; // User ID
   hostName: string;
   photoURL?: string;
   location?: string;
-  scheduledTime: string | Date;
-  endTime?: string | Date;
+  currentParticipants: number;
+  scheduledTime: Timestamp;
+  endTime?: Timestamp;
   status: GameStatus;
   maxParticipants?: number;
   minParticipants?: number;
@@ -133,7 +154,7 @@ export interface Game {
   recurringSeriesId?: string;
   skillLevel?: number; // 1-5 scale
   isPrivate: boolean;
-  isOpenToGuests?: boolean; // Whether the game is open to guests outside the group
+  isOpenToGuests?: boolean;
   inviteCode?: string;
   teams?: Team[];
   results?: GameResults;

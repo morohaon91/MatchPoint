@@ -6,6 +6,7 @@ import GameList from '@/components/games/GameList';
 import { getGroupGames, getUserGroups } from '@/lib/services';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/context/AuthContext';
+import ModernGameForm from '@/components/games/ModernGameForm';
 
 export default function GamesPage() {
   const [games, setGames] = useState<Game[]>([]);
@@ -16,8 +17,9 @@ export default function GamesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { currentUser } = useAuth();
-  const groupId = searchParams.get('groupId');
+  const groupId = searchParams.get('groupId') || undefined;
   const status = searchParams.get('status') as GameStatus | null;
+  const [showCreateGameModal, setShowCreateGameModal] = useState(false);
   
   // Load user's groups
   useEffect(() => {
@@ -59,8 +61,7 @@ export default function GamesPage() {
   }, [currentUser, router, groupId]);
 
   // Load games for selected group
-  useEffect(() => {
-    async function loadGames() {
+  const loadGames = async () => {
       try {
         if (!groupId) {
           if (userGroups.length === 0 && !loadingGroups) {
@@ -72,6 +73,7 @@ export default function GamesPage() {
           return;
         }
 
+      setLoading(true);
         // Fetch games from API
         const queryParams = new URLSearchParams();
         if (status) {
@@ -100,22 +102,27 @@ export default function GamesPage() {
       } finally {
         setLoading(false);
       }
-    }
+  };
 
+  // Load games when group or status changes
+  useEffect(() => {
     if (currentUser || !groupId) {
       loadGames();
     } else {
-      // If no user is logged in yet but we have a groupId, wait for auth to complete
       setLoading(true);
     }
-  }, [groupId, status, userGroups, loadingGroups, currentUser]);
+  }, [groupId, status, currentUser]);
 
   const handleCreateGame = () => {
     if (groupId) {
-      router.push(`/app/games/create?groupId=${groupId}`);
+      setShowCreateGameModal(true);
     } else {
       setError('Please select a group before creating a game.');
     }
+  };
+
+  const handleCloseCreateGameModal = () => {
+    setShowCreateGameModal(false);
   };
   
   const handleGroupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -156,6 +163,68 @@ export default function GamesPage() {
           </button>
         </div>
       </div>
+
+      {/* Create Game Modal */}
+      {showCreateGameModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+          <div className="relative mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-medium text-gray-900">Create New Game</h3>
+              <button
+                onClick={handleCloseCreateGameModal}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="mt-2">
+              <ModernGameForm
+                initialData={{ groupId }}
+                onSubmit={async (formData) => {
+                  try {
+                    const response = await fetch("/api/games/create", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${await currentUser?.getIdToken()}`,
+                      },
+                      body: JSON.stringify(formData),
+                    });
+
+                    if (!response.ok) {
+                      const errorData = await response.json();
+                      throw new Error(errorData.error || "Failed to create game");
+                    }
+
+                    const result = await response.json();
+                    handleCloseCreateGameModal();
+                    
+                    // Refresh the games list
+                    loadGames();
+                  } catch (error) {
+                    console.error("Error creating game:", error);
+                    // Handle error appropriately
+                  }
+                }}
+                onCancel={handleCloseCreateGameModal}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {loading || loadingGroups ? (
         <div className="flex justify-center items-center h-64">

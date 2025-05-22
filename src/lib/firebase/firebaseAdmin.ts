@@ -17,7 +17,7 @@ export const initializeAdmin = () => {
         // The projectId is the only required field for emulator usage
         admin.initializeApp({
           projectId:
-            process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "matchpoint-c6d86",
+            process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "matchpoint-63148",
         });
 
         // Set FIREBASE_AUTH_EMULATOR_HOST to ensure auth emulator is used

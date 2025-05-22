@@ -217,7 +217,7 @@ export default function PlayerDashboard({
           sportType={game.sport.toLowerCase() as any}
           onClick={() => onRegisterGame && onRegisterGame(game.id)}
         >
-          Register ({game.spotsLeft} spots left)
+          Add Me to Game
         </Button>
       );
     }
@@ -228,7 +228,7 @@ export default function PlayerDashboard({
         size="sm"
         onClick={() => onRegisterGame && onRegisterGame(game.id)}
       >
-        Join Waitlist {game.waitlistCount ? `(${game.waitlistCount})` : ""}
+        Add Me to Game
       </Button>
     );
   };

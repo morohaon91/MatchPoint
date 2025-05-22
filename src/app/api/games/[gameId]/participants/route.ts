@@ -12,7 +12,6 @@ import { ParticipantStatus } from "@/lib/types/models";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 import { db } from "@/lib/firebase/firebaseClient";
 import { doc, runTransaction } from "firebase/firestore";
-import { admin } from "@/lib/firebase/firebaseAdmin";
 
 const admin = initializeAdmin();
 
@@ -22,10 +21,10 @@ const admin = initializeAdmin();
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId?: string } }
 ) {
   try {
-    const { gameId } = params;
+    const gameId = params.gameId;
     
     if (!gameId) {
       return NextResponse.json({ error: "Game ID is required" }, { status: 400 });
@@ -116,10 +115,10 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId?: string } }
 ) {
   try {
-    const { gameId } = params;
+    const gameId = params.gameId;
     
     if (!gameId) {
       return NextResponse.json({ error: "Game ID is required" }, { status: 400 });
@@ -188,10 +187,10 @@ export async function POST(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId?: string } }
 ) {
   try {
-    const { gameId } = params;
+    const gameId = params.gameId;
     
     if (!gameId) {
       return NextResponse.json({ error: "Game ID is required" }, { status: 400 });
@@ -257,10 +256,10 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId?: string } }
 ) {
   try {
-    const { gameId } = params;
+    const gameId = params.gameId;
     const { searchParams } = new URL(req.url);
     const participantId = searchParams.get('participantId');
     

@@ -1,10 +1,10 @@
-import {
-  adminApp,
-  adminAuth,
-  adminFirestore,
-  adminStorage,
-} from "@/lib/firebase/firebaseAdmin";
+import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 import { NextRequest, NextResponse } from "next/server";
+
+const admin = initializeAdmin();
+const db = admin.firestore();
+const auth = admin.auth();
+
 export async function POST(req: NextRequest) {
   try {
     const { uid, secretCode, name, email } = await req.json();
@@ -14,12 +14,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if the user document already exists
-    const userDoc = await adminFirestore.collection("users").doc(uid).get();
+    const userDoc = await db.collection("users").doc(uid).get();
 
     if (!userDoc.exists) {
       // Create a new user document in Firestore
-      await admin
-        .firestore()
+      await db
         .collection("users")
         .doc(uid)
         .set(
@@ -34,7 +33,7 @@ export async function POST(req: NextRequest) {
         );
 
       // Set custom claims for the user
-      await adminAuth.setCustomUserClaims(uid, {
+      await auth.setCustomUserClaims(uid, {
         stripeRole: "Free",
       });
 

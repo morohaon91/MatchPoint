@@ -18,6 +18,22 @@ export default function GameDetailsPage() {
   const [participants, setParticipants] = useState<GameParticipant[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [userParticipantStatus, setUserParticipantStatus] = useState<ParticipantStatus | null>(null);
+
+  // Function to fetch participant status
+  const fetchParticipantStatus = async () => {
+    if (!currentUser?.uid || !game || !Array.isArray(participants)) {
+      return null;
+    }
+    
+    try {
+      const participant = participants.find(p => p.userId === currentUser.uid);
+      return participant?.status || null;
+    } catch (err) {
+      console.error('Error fetching participant status:', err);
+      return null;
+    }
+  };
 
   useEffect(() => {
     async function loadGameDetails() {
@@ -47,7 +63,18 @@ export default function GameDetailsPage() {
         }
 
         const gameData = await gameResponse.json();
-        const participantsData = await getGameParticipants(gameId);
+        
+        // Use the API endpoint to fetch participants
+        const participantsResponse = await fetch(`/api/games/${gameId}/participants`, {
+          headers: {
+            'Authorization': `Bearer ${await currentUser?.getIdToken()}`
+          }
+        });
+
+        let participantsData = [];
+        if (participantsResponse.ok) {
+          participantsData = await participantsResponse.json();
+        }
 
         setGame(gameData.game);
         setParticipants(participantsData);
@@ -67,6 +94,19 @@ export default function GameDetailsPage() {
       setLoading(true);
     }
   }, [gameId, currentUser]);
+
+  // Update participant status whenever participants or currentUser changes
+  useEffect(() => {
+    async function updateParticipantStatus() {
+      if (!currentUser?.uid || !game || !Array.isArray(participants)) {
+        setUserParticipantStatus(null);
+        return;
+      }
+      const status = await fetchParticipantStatus();
+      setUserParticipantStatus(status);
+    }
+    updateParticipantStatus();
+  }, [participants, currentUser, game]);
 
   const handleEditGame = () => {
     if (game) {
@@ -157,7 +197,7 @@ export default function GameDetailsPage() {
                 </span>
                 <span className="mx-2 text-gray-400">•</span>
                 <span className="text-gray-600">
-                  {formatDate(game.date)}
+                  {formatDate(game.scheduledTime.toDate())}
                 </span>
               </div>
             </div>

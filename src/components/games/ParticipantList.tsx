@@ -53,27 +53,24 @@ export default function ParticipantList({
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <div className="flex-shrink-0 h-10 w-10 relative">
-              {participant.user?.photoURL ? (
+              {participant.photoURL ? (
                 <Image
-                  src={participant.user.photoURL}
-                  alt={participant.user.name || 'User'}
+                  src={participant.photoURL}
+                  alt={participant.displayName || 'User'}
                   fill
                   className="rounded-full object-cover"
                 />
               ) : (
                 <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
                   <span className="text-gray-500 font-medium">
-                    {participant.user?.name?.charAt(0) || 'U'}
+                    {participant.displayName?.charAt(0) || 'U'}
                   </span>
                 </div>
               )}
             </div>
             <div className="ml-4">
               <div className="text-sm font-medium text-gray-900">
-                {participant.user?.name || 'Unknown User'}
-              </div>
-              <div className="text-sm text-gray-500">
-                {participant.user?.email || ''}
+                {participant.displayName || 'Unknown User'}
               </div>
             </div>
           </div>

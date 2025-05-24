@@ -4,12 +4,12 @@
 export { createGroup } from "../groups/createGroup";
 export { getUserGroups, getPublicGroups } from "../groups/getGroups"; // Removed getUserGroupsAsAdmin
 export {
-  getGroup,
+  getGroupById as getGroup,
   updateGroup,
   deleteGroup,
-  addGroupMember,
-  updateGroupMemberRole,
-  removeGroupMember,
+  joinGroup as addGroupMember,
+  updateMemberRole as updateGroupMemberRole,
+  removeMember as removeGroupMember,
   getGroupMembers,
 } from "../groups/groupService";
 

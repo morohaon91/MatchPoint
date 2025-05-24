@@ -1,172 +1,192 @@
 import { NextResponse, NextRequest } from "next/server";
-import {
-  Timestamp,
-  FieldValue,
-  getFirestore,
-  WriteBatch,
-} from "firebase-admin/firestore"; // Corrected WriteBatch casing
+import { getFirestore, FieldValue, Timestamp } from "firebase-admin/firestore";
 import { initializeAdmin } from "../../../../lib/firebase/firebaseAdmin";
 import {
   Game,
   GameStatus,
   RecurringSeries,
 } from "../../../../lib/types/models";
-import { getCurrentUser } from "../../../../lib/auth/get-current-user"; // Assuming this path is correct or will be created
+import { getCurrentUser } from "../../../../lib/auth/get-current-user";
+import { canManageGames } from "@/lib/services";
 
+// Initialize Firebase Admin
 const admin = initializeAdmin();
-const db = getFirestore(admin.app()); // Get Firestore instance from the initialized admin app
+const db = getFirestore();
+const adminAuth = admin.auth();
 
-// Helper to parse date and time into a Firestore Timestamp
-function parseDateTime(dateStr: string, timeStr: string): Timestamp {
-  const [year, month, day] = dateStr.split("-").map(Number);
-  const [hours, minutes] = timeStr.split(":").map(Number);
-  // Month is 0-indexed in JavaScript Date
-  return Timestamp.fromDate(new Date(year, month - 1, day, hours, minutes));
+// Helper to parse an ISO-like datetime string (YYYY-MM-DDTHH:MM) into an Admin Firestore Timestamp
+function parseDateTime(isoDateTimeStr: string): Timestamp {
+  if (typeof isoDateTimeStr !== "string") {
+    throw new Error("Invalid input: datetime string must be a string.");
+  }
+  const isoRegex = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
+  const match = isoDateTimeStr.match(isoRegex);
+
+  if (!match) {
+    throw new Error(
+      `Invalid datetime format for '${isoDateTimeStr}'. Expected YYYY-MM-DDTHH:MM.`,
+    );
+  }
+
+  const [, yearStr, monthStr, dayStr, hoursStr, minutesStr] = match;
+  const year = parseInt(yearStr, 10);
+  const month = parseInt(monthStr, 10);
+  const day = parseInt(dayStr, 10);
+  const hours = parseInt(hoursStr, 10);
+  const minutes = parseInt(minutesStr, 10);
+
+  if ([year, month, day, hours, minutes].some(isNaN)) {
+    throw new Error(
+      `Invalid date or time value in '${isoDateTimeStr}'. Contains non-numeric parts where numbers are expected.`,
+    );
+  }
+
+  const date = new Date(year, month - 1, day, hours, minutes);
+
+  if (isNaN(date.getTime())) {
+    throw new Error(
+      `Failed to construct a valid date from '${isoDateTimeStr}'. Input results in an invalid Date object (NaN).`,
+    );
+  }
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day ||
+    date.getHours() !== hours ||
+    date.getMinutes() !== minutes
+  ) {
+    throw new Error(
+      `Date components mismatch for '${isoDateTimeStr}'. Likely an invalid day/month combination (e.g., 2023-02-30T10:00) or invalid time component that caused date rollover.`,
+    );
+  }
+
+  try {
+    return Timestamp.fromDate(date);
+  } catch (e: any) {
+    throw new Error(
+      `Error converting date '${isoDateTimeStr}' to Firestore Timestamp: ${e.message}`,
+    );
+  }
 }
 
+// parseDate remains for YYYY-MM-DD strings
 function parseDate(dateStr: string): Timestamp {
+  if (typeof dateStr !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    throw new Error(
+      `Invalid date format for '${dateStr}'. Expected YYYY-MM-DD.`,
+    );
+  }
   const [year, month, day] = dateStr.split("-").map(Number);
-  return Timestamp.fromDate(new Date(year, month - 1, day));
+  if ([year, month, day].some(isNaN)) {
+    throw new Error(
+      `Invalid date value in '${dateStr}'. Contains non-numeric parts.`,
+    );
+  }
+  const date = new Date(year, month - 1, day);
+  if (isNaN(date.getTime())) {
+    throw new Error(
+      `Failed to construct a valid date from '${dateStr}'. Resulting date is invalid.`,
+    );
+  }
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    throw new Error(
+      `Date components mismatch for '${dateStr}'. Likely an invalid day for the month (e.g., Feb 30).`,
+    );
+  }
+  try {
+    return Timestamp.fromDate(date);
+  } catch (e: any) {
+    throw new Error(
+      `Error converting date '${dateStr}' to Firestore Timestamp: ${e.message}`,
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const currentUser = await getCurrentUser(request);
-    if (!currentUser) {
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const token = authHeader.split("Bearer ")[1];
+    const decodedToken = await adminAuth.verifyIdToken(token);
+    const currentUser = decodedToken;
 
-    // Get the body first to extract groupId for permission check
-    const body = await request.json();
-    const { groupId } = body;
-
-    if (!groupId) {
-      return NextResponse.json({ error: "Missing groupId" }, { status: 400 });
-    }
-
-    // Check if user has permission to create games in this group
-    try {
-      const groupMemberRef = db
-        .collection("groups")
-        .doc(groupId)
-        .collection("members")
-        .doc(currentUser.uid);
-      const memberDoc = await groupMemberRef.get();
-
-      if (!memberDoc.exists) {
-        return NextResponse.json(
-          { error: "You are not a member of this group" },
-          { status: 403 },
-        );
-      }
-
-      const memberData = memberDoc.data();
-      if (
-        !memberData ||
-        (memberData.role !== "admin" && memberData.role !== "organizer")
-      ) {
-        return NextResponse.json(
-          {
-            error:
-              "You must be an admin or organizer of this group to create games",
-            details: "Your current role does not have sufficient permissions",
-          },
-          { status: 403 },
-        );
-      }
-    } catch (error) {
-      console.error("Error checking permissions:", error);
-      return NextResponse.json(
-        {
-          error: "Failed to verify permissions",
-          details:
-            "Could not check if you have permission to create games in this group",
-        },
-        { status: 500 },
-      );
-    }
-
-    // Continue with the rest of the request data
     const {
+      groupId,
       title,
       description,
-      scheduledTime, // ISO string from datetime-local input
-      endTime, // ISO string from datetime-local input
+      scheduledTime, // Expected as YYYY-MM-DDTHH:MM
+      endTime, // Optional, expected as YYYY-MM-DDTHH:MM
       location,
-      maxParticipants = 0, // Default to 0 if not provided, meaning unlimited
-      minParticipants = 2, // Default minimum
+      maxParticipants,
+      minParticipants,
+      sport,
       isRecurring,
       isPrivate,
       isOpenToGuests,
-      sport,
-      recurringDetails, // Contains frequency, dayOfWeek, startDate, endDate/occurrences
-    } = body;
+      recurringDetails, // Contains endDate as YYYY-MM-DD
+    } = await request.json();
 
-    // Basic Validation
-    if (!title || !scheduledTime || !location || !groupId) {
+    const canManage = await canManageGames(currentUser.uid, groupId);
+    if (!canManage) {
       return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
+        { error: "You do not have permission to create games in this group" },
+        { status: 403 },
       );
     }
 
-    // const db is now defined above
-    const batch: WriteBatch = db.batch(); // Use db.batch() and type WriteBatch
-
-    // Create game in the top-level games collection to match security rules
-    const gamesCollectionRef = db.collection("games");
-    const newGameRef = gamesCollectionRef.doc(); // Auto-generate ID for the game on the collection reference
-
-    // Parse the scheduledTime from ISO string to Date
-    const scheduledDate = new Date(scheduledTime);
+    // scheduledTime is YYYY-MM-DDTHH:MM, use parseDateTime
+    const scheduledDateAdminTs = parseDateTime(scheduledTime);
 
     const newGameData: Partial<Game> = {
       groupId,
       title,
       description: description || "",
-      scheduledTime: scheduledDate, // Use the parsed date directly
+      scheduledTime: scheduledDateAdminTs, // Admin Timestamp
       location,
       maxParticipants: Number(maxParticipants) || 0,
       minParticipants: Number(minParticipants) || 2,
-      participantIds: [], // Initialize empty array
-      waitlistIds: [], // Initialize empty array
+      participantIds: [],
+      waitlistIds: [],
       status: GameStatus.UPCOMING,
-      sport: sport, // Use the sport from the form
+      sport: sport,
       isRecurring: !!isRecurring,
       isPrivate: !!isPrivate,
       isOpenToGuests: !!isOpenToGuests,
       createdBy: currentUser.uid,
-      hostId: currentUser.uid, // Set host to creator
-      hostName: "Game Host", // Default host name
-      createdAt: new Date(), // Current date
-      updatedAt: new Date(), // Current date
+      hostId: currentUser.uid,
+      hostName: "Game Host",
+      createdAt: Timestamp.now(), // Admin Timestamp
+      updatedAt: Timestamp.now(), // Admin Timestamp
+      currentParticipants: 0,
     };
 
     if (endTime) {
-      const endDate = new Date(endTime);
-      if (endDate <= scheduledDate) {
+      // endTime is YYYY-MM-DDTHH:MM, use parseDateTime
+      const gameEndDateAdminTs = parseDateTime(endTime);
+      if (gameEndDateAdminTs.toMillis() <= scheduledDateAdminTs.toMillis()) {
         return NextResponse.json(
           { error: "End time must be after start time" },
           { status: 400 },
         );
       }
-      // Add endTime to game data
-      newGameData.endTime = endDate;
+      newGameData.endTime = gameEndDateAdminTs; // Admin Timestamp
     }
 
     let recurringSeriesId: string | undefined = undefined;
 
     if (isRecurring && recurringDetails) {
-      const {
-        frequency,
-        dayOfWeek, // For weekly/bi-weekly
-        // startDate from recurringDetails is the same as game's dateStr for the first game
-        endDate: recurringEndDateStr, // YYYY-MM-DD
-        // occurrences - for simplicity, we'll focus on endDate for now or assume a fixed number if not generating all games
-      } = recurringDetails as Partial<RecurringSeries> & {
-        startDate: string;
-        endDate?: string;
-      };
+      const { frequency, dayOfWeek } =
+        recurringDetails as Partial<RecurringSeries> & {
+          startDate: string; // This should align with scheduledTime's date part
+          endDate?: string; // YYYY-MM-DD
+        };
 
       if (!frequency) {
         return NextResponse.json(
@@ -190,35 +210,42 @@ export async function POST(request: NextRequest) {
       const seriesCollectionRef = db
         .collection("groups")
         .doc(groupId)
-        .collection("recurringSeries"); // Use db.collection().doc().collection()
-      const newSeriesRef = seriesCollectionRef.doc(); // Auto-generate ID on the collection reference
+        .collection("recurringSeries");
+      const newSeriesRef = seriesCollectionRef.doc();
       recurringSeriesId = newSeriesRef.id;
 
-      // Use the scheduledTime from the form for the series start
-      const seriesStartDate = new Date(scheduledTime);
+      // seriesStartDateAdminTs is already parsed from scheduledTime (YYYY-MM-DDTHH:MM)
+      const seriesStartDateJsDate = scheduledDateAdminTs.toDate(); // JS Date for RecurringSeries model
+      const seriesStartTimeString = seriesStartDateJsDate
+        .toTimeString()
+        .substring(0, 5); // HH:MM
 
       const newSeriesData: Partial<RecurringSeries> = {
         groupId,
         frequency,
-        startTime: seriesStartDate.toTimeString().substring(0, 5), // Extract HH:MM
-        startDate: seriesStartDate,
+        startTime: seriesStartTimeString, // string
+        startDate: seriesStartDateJsDate, // JS Date, as per RecurringSeries model
         dayOfWeek:
           frequency === "weekly" || frequency === "biweekly"
             ? Number(dayOfWeek)
             : undefined,
         createdBy: currentUser.uid,
         hostId: currentUser.uid,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date(), // JS Date, as per RecurringSeries model
+        updatedAt: new Date(), // JS Date, as per RecurringSeries model
         gameIds: [],
         isActive: true,
-        duration: 120, // Default 2 hours in minutes
+        duration: 120,
       };
 
       if (recurringDetails.endDate) {
         try {
-          const endDate = new Date(recurringDetails.endDate);
-          if (endDate < seriesStartDate) {
+          // recurringDetails.endDate is YYYY-MM-DD, so use parseDate
+          const seriesEndDateAdminTs = parseDate(recurringDetails.endDate);
+          // Compare Admin Timestamps for millis
+          if (
+            seriesEndDateAdminTs.toMillis() < scheduledDateAdminTs.toMillis()
+          ) {
             return NextResponse.json(
               {
                 error:
@@ -227,38 +254,34 @@ export async function POST(request: NextRequest) {
               { status: 400 },
             );
           }
-          newSeriesData.endDate = endDate;
-        } catch (e) {
+          newSeriesData.endDate = seriesEndDateAdminTs.toDate(); // JS Date for model
+        } catch (e: any) {
           return NextResponse.json(
-            { error: "Invalid recurring end date format" },
+            { error: e.message || "Invalid recurring end date format" },
             { status: 400 },
           );
         }
       }
 
-      batch.set(newSeriesRef, newSeriesData);
+      await db.runTransaction(async (transaction) => {
+        transaction.set(newSeriesRef, newSeriesData);
+        transaction.set(
+          newSeriesRef.collection("gameIds").doc(newSeriesRef.id),
+          {
+            gameIds: FieldValue.arrayUnion(newSeriesRef.id),
+          },
+        );
+      });
       newGameData.recurringSeriesId = recurringSeriesId;
     }
 
+    const batch = db.batch();
+    const gamesCollectionRef = db.collection("games");
+    const newGameRef = gamesCollectionRef.doc();
     batch.set(newGameRef, newGameData);
 
     try {
-      console.log("Attempting to commit batch with game data:", {
-        gameId: newGameRef.id,
-        groupId,
-        title,
-        isRecurring,
-        recurringSeriesId,
-      });
-
       await batch.commit();
-
-      console.log("Game created successfully:", {
-        gameId: newGameRef.id,
-        groupId,
-        recurringSeriesId,
-      });
-
       return NextResponse.json(
         {
           message: "Game created successfully",
@@ -278,46 +301,30 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error: any) {
-    console.error("Error creating game:", error);
-
-    // Log detailed information about the request
-    // Use safe error logging that doesn't depend on variables that might not be defined
+    console.error("Error in POST /api/games/create:", error.message);
+    if (
+      error.message.startsWith("Invalid") ||
+      error.message.startsWith("Date components mismatch") ||
+      error.message.startsWith("Failed to construct")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error("Error stack:", error.stack);
-
-    // It's good practice to avoid sending raw error messages to the client
-    // if they might contain sensitive information.
     let errorMessage = "Failed to create game due to an internal error.";
     let statusCode = 500;
-
-    if (error.message && typeof error.message === "string") {
-      // Handle specific error types
-      if (error.message.startsWith("Unauthorized")) {
-        errorMessage = error.message;
-        statusCode = 401;
-      } else if (
-        error.message.startsWith("Missing required fields") ||
-        error.message.startsWith("Invalid")
-      ) {
-        errorMessage = error.message;
-        statusCode = 400;
-      } else if (error.code === "permission-denied") {
-        errorMessage =
-          "You don't have permission to create games in this group";
-        statusCode = 403;
-      }
+    // Simplified error handling, specific checks like auth/permission are done earlier
+    if (error.code === "permission-denied") {
+      // Example of specific Firebase error code
+      errorMessage = "You don't have permission to create games in this group";
+      statusCode = 403;
     }
-
     return NextResponse.json(
-      {
-        error: errorMessage,
-        requestId: Date.now().toString(), // Add a unique ID to help with debugging
-      },
+      { error: errorMessage, requestId: Date.now().toString() },
       { status: statusCode },
     );
   }
 }
 
-// Placeholder for GET if needed, or remove if not used.
 export async function GET(request: NextRequest) {
   return NextResponse.json({
     message: "This endpoint is for POSTing new games.",

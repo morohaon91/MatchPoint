@@ -5,7 +5,11 @@
  * used throughout the MatchPoint application.
  */
 
-import { Timestamp, FieldValue } from "firebase/firestore";
+import { Timestamp as ClientTimestamp } from "firebase/firestore";
+import { Timestamp as AdminTimestamp } from "firebase-admin/firestore";
+
+// Union type to handle both client and admin Timestamps
+export type FirestoreTimestamp = ClientTimestamp | AdminTimestamp;
 
 /**
  * Sport types supported by the application
@@ -46,9 +50,9 @@ export interface GameParticipant {
   gameId: string;
   userId: string;
   status: ParticipantStatus;
-  joinedAt: Timestamp;
-  registeredAt: Timestamp;
-  role: 'host' | 'player' | 'organizer';
+  joinedAt: FirestoreTimestamp;
+  registeredAt: FirestoreTimestamp;
+  role: "host" | "player" | "organizer";
   isGuest: boolean;
   // Optional user details for quick access
   displayName?: string;
@@ -135,16 +139,16 @@ export interface Game {
   sport: SportType;
   groupId?: string;
   groupName?: string; // Name of the group this game belongs to
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: FirestoreTimestamp;
+  updatedAt: FirestoreTimestamp;
   createdBy: string; // User ID
   hostId: string; // User ID
   hostName: string;
   photoURL?: string;
   location?: string;
   currentParticipants: number;
-  scheduledTime: Timestamp;
-  endTime?: Timestamp;
+  scheduledTime: FirestoreTimestamp;
+  endTime?: FirestoreTimestamp;
   status: GameStatus;
   maxParticipants?: number;
   minParticipants?: number;

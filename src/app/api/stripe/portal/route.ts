@@ -1,10 +1,12 @@
-import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
+import {
+  adminApp,
+  adminAuth,
+  adminFirestore,
+  adminStorage,
+} from "@/lib/firebase/firebaseAdmin";
 import { getStripeServerSide } from "@/lib/stripe/getStripeServerSide";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-
-const admin = initializeAdmin();
-
 export async function GET(req: NextRequest) {
   try {
     const cookieStore = cookies();
@@ -26,7 +28,7 @@ export async function GET(req: NextRequest) {
     if (!customer_id)
       return NextResponse.json(
         { error: "Customer not found" },
-        { status: 404 }
+        { status: 404 },
       );
 
     const session = await stripe.billingPortal.sessions.create({

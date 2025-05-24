@@ -211,25 +211,43 @@ export default function PlayerDashboard({
 
     if (game.spotsLeft && game.spotsLeft > 0) {
       return (
-        <Button
-          variant="primary"
-          size="sm"
-          sportType={game.sport.toLowerCase() as any}
-          onClick={() => onRegisterGame && onRegisterGame(game.id)}
-        >
-          Add Me to Game
-        </Button>
+        <div className="flex space-x-2">
+          <Button
+            variant="primary"
+            size="sm"
+            sportType={game.sport.toLowerCase() as any}
+            onClick={() => onRegisterGame && onRegisterGame(game.id)}
+          >
+            Add Me to Game
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {}}
+          >
+            Cancel
+          </Button>
+        </div>
       );
     }
 
     return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onRegisterGame && onRegisterGame(game.id)}
-      >
-        Add Me to Game
-      </Button>
+      <div className="flex space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onRegisterGame && onRegisterGame(game.id)}
+        >
+          Add Me to Game
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {}}
+        >
+          Cancel
+        </Button>
+      </div>
     );
   };
 

@@ -1,8 +1,10 @@
-import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
+import {
+  adminApp,
+  adminAuth,
+  adminFirestore,
+  adminStorage,
+} from "@/lib/firebase/firebaseAdmin";
 import { NextResponse } from "next/server";
-
-const admin = initializeAdmin();
-
 export async function GET() {
   try {
     const productSnapshot = await admin

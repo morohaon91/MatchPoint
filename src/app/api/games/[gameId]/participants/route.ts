@@ -44,7 +44,7 @@ interface ParticipantParams {
  */
 export async function GET(
   req: Request,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId: string } },
 ) {
   const { gameId } = params;
 
@@ -58,7 +58,7 @@ export async function GET(
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
         { error: "Unauthorized: Missing or invalid token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -69,7 +69,7 @@ export async function GET(
       console.error("Error verifying token:", authError);
       return NextResponse.json(
         { error: "Unauthorized: Invalid token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -83,32 +83,34 @@ export async function GET(
     if (participantsSnapshot.empty) {
       return NextResponse.json(
         { error: "No participants found for this game" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    const participants: GameParticipant[] = participantsSnapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        gameId,
-        userId: data.userId,
-        status: data.status || ParticipantStatus.CONFIRMED,
-        joinedAt: data.joinedAt,
-        registeredAt: data.registeredAt,
-        role: data.role || "player",
-        isGuest: data.isGuest || false,
-        displayName: data.displayName,
-        photoURL: data.photoURL,
-      } as GameParticipant;
-    });
+    const participants: GameParticipant[] = participantsSnapshot.docs.map(
+      (doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          gameId,
+          userId: data.userId,
+          status: data.status || ParticipantStatus.CONFIRMED,
+          joinedAt: data.joinedAt,
+          registeredAt: data.registeredAt,
+          role: data.role || "player",
+          isGuest: data.isGuest || false,
+          displayName: data.displayName,
+          photoURL: data.photoURL,
+        } as GameParticipant;
+      },
+    );
 
     return NextResponse.json(participants, { status: 200 });
   } catch (error: any) {
     console.error(`Error fetching participants for game ${gameId}:`, error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -166,23 +168,24 @@ export async function GET(
  */
 export async function POST(
   req: Request,
-  { params }: { params: { gameId: string } }
+  { params }: { params: { gameId: string } },
 ) {
   const { gameId } = params;
-  
+
   try {
     // Validate Content-Type header
-    const contentType = req.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
+    const contentType = req.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
       return new Response(
         JSON.stringify({
-          error: 'Invalid Content-Type. Expected application/json',
-          details: 'Please ensure you are sending the request with the correct Content-Type header'
+          error: "Invalid Content-Type. Expected application/json",
+          details:
+            "Please ensure you are sending the request with the correct Content-Type header",
         }),
-        { 
+        {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -193,13 +196,13 @@ export async function POST(
     } catch (error) {
       return new Response(
         JSON.stringify({
-          error: 'Invalid JSON in request body',
-          details: 'Please ensure your request body is properly formatted JSON'
+          error: "Invalid JSON in request body",
+          details: "Please ensure your request body is properly formatted JSON",
         }),
-        { 
+        {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -207,18 +210,21 @@ export async function POST(
     if (!body.userId) {
       return new Response(
         JSON.stringify({
-          error: 'Missing required field',
-          details: 'userId is required in the request body'
+          error: "Missing required field",
+          details: "userId is required in the request body",
         }),
-        { 
+        {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
     if (!gameId) {
-      return NextResponse.json({ error: "Game ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Game ID is required" },
+        { status: 400 },
+      );
     }
 
     try {
@@ -253,7 +259,9 @@ export async function POST(
       // --- End Authorization Placeholder ---
 
       const gameRef = db.collection("games").doc(gameId);
-      const participantRef = gameRef.collection("participants").doc(body.userId);
+      const participantRef = gameRef
+        .collection("participants")
+        .doc(body.userId);
 
       const newParticipantData: Omit<
         GameParticipant,
@@ -324,7 +332,7 @@ export async function POST(
     console.error(`Error adding participant to game ${gameId}:`, error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

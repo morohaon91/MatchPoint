@@ -37,6 +37,7 @@
     "firebase": "^10.7.1",
     "gray-matter": "^4.0.3",
     "js-cookie": "^3.0.5",
+    "lucide-react": "^0.511.0",
     "mixpanel-browser": "^2.48.1",
     "next": "^14.2.15",
     "next-mdx-remote": "^5.0.0",

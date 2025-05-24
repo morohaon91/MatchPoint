@@ -5,6 +5,7 @@ import { User } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
 import { DefaultCookieManager } from "../cookies/DefaultCookieManager";
 import { AuthService } from "../auth/AuthService";
+import { checkProfileComplete } from "../firebase/userProfile";
 
 type UserClaims = {
   [key: string]: any;
@@ -14,12 +15,14 @@ interface AuthContextType {
   currentUser: User | null;
   userClaims: UserClaims | null;
   isLoadingAuth: boolean;
+  isProfileComplete: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   userClaims: null,
   isLoadingAuth: true,
+  isProfileComplete: false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -36,6 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userClaims, setUserClaims] = useState<UserClaims | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [isProfileComplete, setIsProfileComplete] = useState(false);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -43,43 +47,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged(async (user) => {
       setCurrentUser(user);
-      // setIsLoadingAuth(false); // Moved down
 
       if (user) {
         try {
-          // Call getUserClaims without forcing refresh by default.
-          // The second argument (forceRefresh) is now optional and defaults to false in AuthService.
           const claims = await authService.getUserClaims(user);
           setUserClaims(claims);
           DefaultCookieManager.addAuthCookie(user.uid);
+
+          // Check profile completion
+          const profileComplete = await checkProfileComplete(user.uid);
+          setIsProfileComplete(profileComplete);
         } catch (error) {
-          console.error("Failed to get user claims:", error);
-          setUserClaims(null); // Ensure claims are cleared on error
+          console.error("Failed to get user data:", error);
+          setUserClaims(null);
+          setIsProfileComplete(false);
         }
       } else {
         setUserClaims(null);
+        setIsProfileComplete(false);
         DefaultCookieManager.removeAuthCookie();
       }
-      setIsLoadingAuth(false); // Set loading to false after all auth operations
+      setIsLoadingAuth(false);
     });
 
     return () => unsubscribe();
-  }, [authService]); // Keep dependencies minimal unless others are truly needed for this effect's logic
+  }, [authService]);
 
   useEffect(() => {
     if (isLoadingAuth) return;
 
     if (!currentUser && pathname.startsWith("/app")) {
       router.push("/login");
-    } else if (currentUser && pathname.startsWith("/login")) {
-      router.push("/app/dashboard");
+    } else if (currentUser) {
+      if (!isProfileComplete && !pathname.startsWith("/onboarding")) {
+        router.push("/onboarding");
+      } else if (isProfileComplete && pathname.startsWith("/login")) {
+        router.push("/app/dashboard");
+      }
     }
-  }, [currentUser, pathname, router, isLoadingAuth]);
+  }, [currentUser, pathname, router, isLoadingAuth, isProfileComplete]);
 
   const value = {
     currentUser,
     userClaims,
     isLoadingAuth,
+    isProfileComplete,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

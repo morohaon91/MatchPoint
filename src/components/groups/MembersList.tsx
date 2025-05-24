@@ -4,6 +4,13 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Group, GroupMember } from "@/lib/types/models";
 import InviteMembersModal from "./InviteMembersModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/DropdownMenu";
+import { Button } from "@/components/ui/Button";
 
 interface MembersListProps {
   group: Group;
@@ -121,7 +128,7 @@ export default function MembersList({
                   </div>
                 </div>
 
-                <div className="flex items-center">
+                <div className="flex items-center space-x-2">
                   <span
                     className={`px-2 py-1 text-xs font-medium rounded-full ${
                       member.role === "admin"
@@ -135,26 +142,71 @@ export default function MembersList({
                   </span>
 
                   {isAdmin && (
-                    <button
-                      type="button"
-                      onClick={() => toggleMemberExpand(member.userId)}
-                      className="ml-2 text-gray-400 hover:text-gray-500"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                        >
+                          <span className="sr-only">Open menu</span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-gray-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-36">
+                        {onRoleChange && (
+                          <>
+                            <DropdownMenuItem
+                              onClick={() => onRoleChange(member.userId, "member")}
+                              className="justify-between"
+                            >
+                              Member
+                              {member.role === "member" && (
+                                <span className="text-primary-500">✓</span>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => onRoleChange(member.userId, "organizer")}
+                              className="justify-between"
+                            >
+                              Organizer
+                              {member.role === "organizer" && (
+                                <span className="text-primary-500">✓</span>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => onRoleChange(member.userId, "admin")}
+                              className="justify-between"
+                            >
+                              Admin
+                              {member.role === "admin" && (
+                                <span className="text-primary-500">✓</span>
+                              )}
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                        {onRemoveMember && (
+                          <DropdownMenuItem
+                            onClick={() => onRemoveMember(member.userId)}
+                            className="text-red-600 focus:bg-red-50 focus:text-red-700"
+                          >
+                            Remove
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   )}
                 </div>
               </div>

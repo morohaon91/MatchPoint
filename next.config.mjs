@@ -11,7 +11,20 @@ const withMDX = createMDX({
 
 const nextConfig = {
   images: {
-    remotePatterns: [{ hostname: "" }],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.gravatar.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com', // For Google profile pictures
+      }
+    ],
   },
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   optimizeFonts: false,

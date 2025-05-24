@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Game, GameStatus, SportType } from "@/lib/types/models";
 import {
@@ -16,7 +16,11 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@/components/ui/Avatar";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp as FirestoreTimestamp } from "firebase/firestore";
+import Image from 'next/image';
+import { joinGame } from "@/lib/games/gameService";
+import { useAuth } from "@/lib/context/AuthContext";
+import toast from "react-hot-toast";
 
 interface ModernGameCardProps {
   game: Game;
@@ -44,12 +48,15 @@ export default function ModernGameCard({
   participantAvatars = [],
   className = "",
 }: ModernGameCardProps) {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const { currentUser } = useAuth();
+
   // Format date for display
-  const formatGameDate = (timestamp: Timestamp | Date | string): string => {
+  const formatGameDate = (timestamp: FirestoreTimestamp | Date | string): string => {
     try {
       let date: Date;
       
-      if (timestamp instanceof Timestamp) {
+      if (timestamp instanceof FirestoreTimestamp) {
         date = timestamp.toDate();
       } else if (timestamp instanceof Date) {
         date = timestamp;
@@ -99,6 +106,47 @@ export default function ModernGameCard({
     }
   };
 
+  const handleRegisterClick = () => {
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmRegister = async () => {
+    try {
+      if (!currentUser?.uid) {
+        toast.error("You must be logged in to join a game");
+        return;
+      }
+
+      await joinGame(game.id, currentUser.uid);
+      
+      if (onRegister) {
+        onRegister(game.id);
+      }
+      
+      toast.success("You have successfully joined the game");
+    } catch (error) {
+      console.error("Error joining game:", error);
+      
+      // Handle specific error cases
+      if (error instanceof Error) {
+        if (error.message === 'Not authenticated') {
+          toast.error("Please log in again to join the game");
+          // Optionally trigger a re-authentication flow here
+          return;
+        }
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to join game");
+      }
+    } finally {
+      setShowConfirmDialog(false);
+    }
+  };
+
+  const handleCancelDialog = () => {
+    setShowConfirmDialog(false);
+  };
+
   // Get registration status component
   const getRegistrationStatus = () => {
     if (
@@ -146,7 +194,7 @@ export default function ModernGameCard({
           variant="primary"
           size="sm"
           sportType={game.sport}
-          onClick={() => onRegister && onRegister(game.id)}
+          onClick={handleRegisterClick}
         >
           Add Me to Game
         </Button>
@@ -157,7 +205,7 @@ export default function ModernGameCard({
       <Button
         variant="outline"
         size="sm"
-        onClick={() => onRegister && onRegister(game.id)}
+        onClick={handleRegisterClick}
       >
         Add Me to Game
       </Button>
@@ -174,12 +222,13 @@ export default function ModernGameCard({
       {/* Game image */}
       {game.photoURL && (
         <div className="relative w-full h-32 overflow-hidden">
-          <img
+          <Image
             src={game.photoURL}
             alt={game.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             onError={(e) => {
-              (e.target as HTMLImageElement).src =
+              (e.target as any).src =
                 "https://via.placeholder.com/400x200?text=Game+Image";
             }}
           />
@@ -303,6 +352,24 @@ export default function ModernGameCard({
           {getRegistrationStatus()}
         </div>
       </CardFooter>
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-2">Join Game</h3>
+            <p className="mb-4">Are you sure you want to join &quot;{game.title}&quot;?</p>
+            <div className="flex justify-end space-x-3">
+              <Button variant="outline" size="sm" onClick={handleCancelDialog}>
+                Cancel
+              </Button>
+              <Button variant="primary" size="sm" sportType={game.sport} onClick={handleConfirmRegister}>
+                Confirm
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

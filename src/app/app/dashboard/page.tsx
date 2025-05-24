@@ -15,8 +15,10 @@ import { getUserUpcomingGames } from "@/lib/games/gameService"; // Import game s
 import {
   getUserGroups,
   getPendingGroupInvitesForUser,
+  acceptGroupInvite,
 } from "@/lib/groups/groupService"; // Import group services
 import GroupSelectionModal from "@/components/groups/GroupSelectionModal";
+import { toast } from "react-hot-toast";
 
 // Placeholder loading component
 const DashboardLoadingSkeleton = () => (
@@ -37,15 +39,26 @@ const DashboardLoadingSkeleton = () => (
 );
 
 export default function DashboardPage() {
-  const { currentUser: authUser, isLoadingAuth } = useAuth(); // Use real auth context
+  const { currentUser, isLoadingAuth } = useAuth(); // Use real auth context
   const [pageSpecificUser, setPageSpecificUser] = useState<User | null>(null); // For adapting authUser to User type
   const [userGames, setUserGames] = useState<Game[]>([]);
-  const [pendingGroupInvites, setPendingGroupInvites] = useState<Group[]>([]);
   const [userGroups, setUserGroups] = useState<Group[]>([]);
+  const [pendingGroupInvites, setPendingGroupInvites] = useState<Group[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true); // Renamed from isLoading to avoid conflict
   const [error, setError] = useState<string | null>(null);
   const [isGroupSelectionModalOpen, setIsGroupSelectionModalOpen] =
     useState(false);
+
+  // Function to load user groups
+  const loadUserGroups = async () => {
+    if (!currentUser?.uid) return;
+    try {
+      const groups = await getUserGroups(currentUser.uid);
+      setUserGroups(groups);
+    } catch (error) {
+      console.error("Error loading user groups:", error);
+    }
+  };
 
   useEffect(() => {
     if (isLoadingAuth) {
@@ -53,7 +66,7 @@ export default function DashboardPage() {
       return;
     }
 
-    if (!authUser) {
+    if (!currentUser) {
       // AuthProvider should handle redirect to login if not authenticated.
       // If we reach here and authUser is null, it means AuthProvider might allow non-logged-in users
       // on this page, or there's a delay. For now, we'll stop data loading.
@@ -70,10 +83,10 @@ export default function DashboardPage() {
         // Adapt the Firebase User (authUser) to your application's User type
         // This is a simplified adaptation. You might need more fields or logic.
         const fetchedAppUser: User = {
-          id: authUser.uid,
-          email: authUser.email || "default@example.com",
-          displayName: authUser.displayName || "User",
-          photoURL: authUser.photoURL || undefined,
+          id: currentUser.uid,
+          email: currentUser.email || "default@example.com",
+          displayName: currentUser.displayName || "User",
+          photoURL: currentUser.photoURL || undefined,
           role: UserRole.USER, // Default role, consider fetching actual role if stored
           createdAt: new Date(), // Placeholder, ideally from user profile in DB
           updatedAt: new Date(), // Placeholder
@@ -84,9 +97,9 @@ export default function DashboardPage() {
 
         // --- Fetching real data from Firestore ---
         const [games, groups, invites] = await Promise.all([
-          getUserUpcomingGames(authUser.uid),
-          getUserGroups(authUser.uid),
-          getPendingGroupInvitesForUser(authUser.uid),
+          getUserUpcomingGames(currentUser.uid),
+          getUserGroups(currentUser.uid),
+          getPendingGroupInvitesForUser(currentUser.uid),
         ]);
 
         setUserGames(games);
@@ -102,15 +115,28 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, [authUser, isLoadingAuth]);
+  }, [currentUser, isLoadingAuth]);
 
   // Placeholder handler functions
   const handleAcceptGroupInvite = async (groupId: string) => {
-    console.log(`Accepted invite for group: ${groupId}`);
-    // TODO: Implement Firebase logic to accept invite
-    // Example: remove from invitedUserIds, add to memberIds, update counts
-    setPendingGroupInvites((prev) => prev.filter((g) => g.id !== groupId));
-    // Potentially add to userGroups if not already there (though re-fetch might be better)
+    try {
+      if (!currentUser?.uid) {
+        throw new Error("You must be logged in to accept invites");
+      }
+
+      await acceptGroupInvite(groupId, currentUser.uid);
+      
+      // Update local state
+      setPendingGroupInvites((prev) => prev.filter((g) => g.id !== groupId));
+      
+      // Refresh user groups to include the newly joined group
+      await loadUserGroups();
+      
+      toast.success("You have successfully joined the group!");
+    } catch (error) {
+      console.error("Failed to accept invite:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to accept invite");
+    }
   };
 
   const handleDeclineGroupInvite = async (groupId: string) => {
@@ -142,7 +168,7 @@ export default function DashboardPage() {
     );
   }
 
-  if (!authUser || !pageSpecificUser) {
+  if (!currentUser || !pageSpecificUser) {
     // Check authUser from context and the derived pageSpecificUser
     // AuthProvider should redirect to login. If not, show a message.
     return (

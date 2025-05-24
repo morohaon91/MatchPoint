@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   createGroup,
-  getUserGroups, // Keep for potential client-side usage elsewhere, or remove if only admin version is used server-side
+  getUserGroups,
   getPublicGroups,
 } from "@/lib/services";
-import { getUserGroupsAsAdmin } from "@/lib/groups/groupAdminService"; // Import directly
+import { getUserGroupsAsAdmin } from "@/lib/groups/groupAdminService";
 import { Group, SportType } from "@/lib/types/models";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 
+// Initialize Firebase Admin
 const admin = initializeAdmin();
+const auth = admin.auth();
 
 /**
  * GET /api/groups
@@ -31,7 +33,7 @@ export async function GET(req: NextRequest) {
 
       // Verify the token and get the user ID
       try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
+        const decodedToken = await auth.verifyIdToken(token);
         userId = decodedToken.uid;
       } catch (error) {
         console.error("Error verifying token:", error);
@@ -63,7 +65,13 @@ export async function GET(req: NextRequest) {
           groups = groups.filter((group) => group.sport === sport);
         }
       } else {
-        groups = await getPublicGroups(sport || undefined);
+        // Call getPublicGroups without arguments as it doesn't accept any
+        groups = await getPublicGroups();
+        
+        // Filter by sport if specified
+        if (sport) {
+          groups = groups.filter((group) => group.sport === sport);
+        }
       }
 
       return NextResponse.json({
@@ -112,7 +120,7 @@ export async function POST(req: NextRequest) {
     const token = authHeader.split("Bearer ")[1];
 
     // Verify the token and get the user ID
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    const decodedToken = await auth.verifyIdToken(token);
     const userId = decodedToken.uid;
 
     // Parse the request body

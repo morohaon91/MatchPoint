@@ -22,6 +22,7 @@ import {
   GameStatus,
   ParticipantStatus,
 } from "@/lib/types/models";
+import { getAuth } from "firebase/auth";
 
 /**
  * Get upcoming games for a user
@@ -141,7 +142,20 @@ export async function getGame(gameId: string): Promise<Game | null> {
       return null;
     }
 
-    return gameDoc.data() as Game;
+    const data = gameDoc.data();
+    return {
+      ...data,
+      id: gameDoc.id,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      scheduledTime: data.scheduledTime,
+      endTime: data.endTime,
+      participantIds: data.participantIds || [],
+      waitlistIds: data.waitlistIds || [],
+      isRecurring: data.isRecurring || false,
+      isPrivate: data.isPrivate || false,
+      currentParticipants: data.currentParticipants || 0
+    } as Game;
   } catch (error) {
     console.error("Error getting game:", error);
     return null;
@@ -465,5 +479,92 @@ export async function removeGameParticipant(
   } catch (error) {
     console.error("Error removing game participant:", error);
     throw new Error("Failed to remove game participant");
+  }
+}
+
+/**
+ * Join a game as a participant
+ * 
+ * @param gameId - The ID of the game to join
+ * @param userId - The ID of the user joining the game
+ * @param options - Optional parameters for joining the game
+ * @returns A promise that resolves to the created participant
+ */
+export async function joinGame(
+  gameId: string,
+  userId: string,
+  options?: {
+    role?: string;
+    status?: ParticipantStatus;
+  }
+): Promise<GameParticipant> {
+  try {
+    // Get the current user's ID token
+    const auth = getAuth();
+    const token = await auth.currentUser?.getIdToken();
+
+    if (!token) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await fetch(`/api/games/${gameId}/participants`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        userId,
+        role: options?.role,
+        status: options?.status,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }));
+      throw new Error(errorData.error || `Failed to join game: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data as GameParticipant;
+  } catch (error) {
+    console.error('Error joining game:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch participants for a game using the API
+ * 
+ * @param gameId - The ID of the game to fetch participants for
+ * @returns A promise that resolves to an array of game participants
+ */
+export async function fetchGameParticipants(gameId: string): Promise<GameParticipant[]> {
+  try {
+    // Get the current user's ID token
+    const auth = getAuth();
+    const token = await auth.currentUser?.getIdToken();
+
+    if (!token) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await fetch(`/api/games/${gameId}/participants`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }));
+      throw new Error(errorData.error || `Failed to fetch game participants: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data as GameParticipant[];
+  } catch (error) {
+    console.error('Error fetching game participants:', error);
+    throw error;
   }
 }

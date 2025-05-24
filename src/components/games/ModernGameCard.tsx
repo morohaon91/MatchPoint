@@ -16,8 +16,11 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@/components/ui/Avatar";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp as FirestoreTimestamp } from "firebase/firestore";
 import Image from 'next/image';
+import { joinGame } from "@/lib/games/gameService";
+import { useAuth } from "@/lib/context/AuthContext";
+import toast from "react-hot-toast";
 
 interface ModernGameCardProps {
   game: Game;
@@ -46,13 +49,14 @@ export default function ModernGameCard({
   className = "",
 }: ModernGameCardProps) {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const { currentUser } = useAuth();
 
   // Format date for display
-  const formatGameDate = (timestamp: Timestamp | Date | string): string => {
+  const formatGameDate = (timestamp: FirestoreTimestamp | Date | string): string => {
     try {
       let date: Date;
       
-      if (timestamp instanceof Timestamp) {
+      if (timestamp instanceof FirestoreTimestamp) {
         date = timestamp.toDate();
       } else if (timestamp instanceof Date) {
         date = timestamp;
@@ -106,11 +110,37 @@ export default function ModernGameCard({
     setShowConfirmDialog(true);
   };
 
-  const handleConfirmRegister = () => {
-    if (onRegister) {
-      onRegister(game.id);
+  const handleConfirmRegister = async () => {
+    try {
+      if (!currentUser?.uid) {
+        toast.error("You must be logged in to join a game");
+        return;
+      }
+
+      await joinGame(game.id, currentUser.uid);
+      
+      if (onRegister) {
+        onRegister(game.id);
+      }
+      
+      toast.success("You have successfully joined the game");
+    } catch (error) {
+      console.error("Error joining game:", error);
+      
+      // Handle specific error cases
+      if (error instanceof Error) {
+        if (error.message === 'Not authenticated') {
+          toast.error("Please log in again to join the game");
+          // Optionally trigger a re-authentication flow here
+          return;
+        }
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to join game");
+      }
+    } finally {
+      setShowConfirmDialog(false);
     }
-    setShowConfirmDialog(false);
   };
 
   const handleCancelDialog = () => {

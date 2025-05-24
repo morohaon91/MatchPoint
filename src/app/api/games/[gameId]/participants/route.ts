@@ -168,6 +168,8 @@ export async function POST(
   req: Request,
   { params }: { params: { gameId: string } }
 ) {
+  const { gameId } = params;
+  
   try {
     // Validate Content-Type header
     const contentType = req.headers.get('content-type');
@@ -214,8 +216,6 @@ export async function POST(
         }
       );
     }
-
-    const { gameId } = params;
 
     if (!gameId) {
       return NextResponse.json({ error: "Game ID is required" }, { status: 400 });
@@ -324,7 +324,7 @@ export async function POST(
     console.error(`Error adding participant to game ${gameId}:`, error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
